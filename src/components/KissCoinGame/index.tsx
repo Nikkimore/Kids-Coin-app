@@ -12,8 +12,17 @@ const CATCHER_HEIGHT = 16;
 const CATCHER_Y = CANVAS_HEIGHT - 40;
 const HEART_SIZE = 28;
 const HEARTS_PER_COIN = 3;
-const SPAWN_INTERVAL_MS = 700;
 const LEADERBOARD_POLL_MS = 5000;
+
+// Hearts start slow and spawn every 700ms; over DIFFICULTY_RAMP_MS of
+// continuous play, spawns tighten toward MIN_SPAWN_INTERVAL_MS and fall
+// speed climbs toward MAX_SPEED_MULTIPLIER, then difficulty holds steady.
+const BASE_SPAWN_INTERVAL_MS = 700;
+const MIN_SPAWN_INTERVAL_MS = 250;
+const BASE_HEART_SPEED_MIN = 1.5;
+const BASE_HEART_SPEED_RANGE = 2;
+const MAX_SPEED_MULTIPLIER = 2.2;
+const DIFFICULTY_RAMP_MS = 45000;
 
 type Heart = {
   id: number;
@@ -34,6 +43,7 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
   const heartsRef = useRef<Heart[]>([]);
   const nextHeartIdRef = useRef(0);
   const lastSpawnRef = useRef(0);
+  const runStartRef = useRef(0);
   const animationRef = useRef(0);
   const heartsCaughtThisRunRef = useRef(0);
   const claimOfferedForRunRef = useRef(false);
@@ -119,20 +129,33 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
 
-    lastSpawnRef.current = performance.now();
+    const now = performance.now();
+    lastSpawnRef.current = now;
+    runStartRef.current = now;
 
     const tick = (time: number) => {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       ctx.fillStyle = '#fff0f5';
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      if (time - lastSpawnRef.current > SPAWN_INTERVAL_MS) {
+      const difficulty = Math.min(
+        (time - runStartRef.current) / DIFFICULTY_RAMP_MS,
+        1,
+      );
+      const spawnInterval =
+        BASE_SPAWN_INTERVAL_MS -
+        difficulty * (BASE_SPAWN_INTERVAL_MS - MIN_SPAWN_INTERVAL_MS);
+      const speedMultiplier = 1 + difficulty * (MAX_SPEED_MULTIPLIER - 1);
+
+      if (time - lastSpawnRef.current > spawnInterval) {
         lastSpawnRef.current = time;
         heartsRef.current.push({
           id: nextHeartIdRef.current++,
           x: Math.random() * (CANVAS_WIDTH - HEART_SIZE) + HEART_SIZE / 2,
           y: -HEART_SIZE,
-          speed: 1.5 + Math.random() * 2,
+          speed:
+            (BASE_HEART_SPEED_MIN + Math.random() * BASE_HEART_SPEED_RANGE) *
+            speedMultiplier,
         });
       }
 

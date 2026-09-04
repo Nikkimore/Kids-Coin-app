@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 
 import { auth } from '@/auth';
 import { AuthButton } from '@/components/AuthButton';
+import { DevGuestButton } from '@/components/AuthButton/DevGuestButton';
 
 export default async function LandingPage() {
   const session = await auth();
@@ -18,6 +19,7 @@ export default async function LandingPage() {
         wallet in World App to start playing.
       </p>
       <AuthButton />
+      <DevGuestButton />
     </main>
   );
 }

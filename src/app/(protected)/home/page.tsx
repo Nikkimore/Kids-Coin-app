@@ -16,10 +16,13 @@ export default async function Home() {
               <p className="text-sm font-semibold capitalize">
                 {session?.user.username}
               </p>
-              <Marble
-                src={session?.user.profilePictureUrl ?? undefined}
-                className="w-12"
-              />
+              {session?.user.profilePictureUrl ? (
+                <Marble src={session.user.profilePictureUrl} className="w-12" />
+              ) : (
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-100 bg-gray-100 text-sm font-semibold uppercase text-gray-500">
+                  {session?.user.username?.[0] ?? '?'}
+                </div>
+              )}
             </div>
           }
         />

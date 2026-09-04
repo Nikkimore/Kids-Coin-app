@@ -17,10 +17,18 @@ function getRedis(): Redis | null {
   return new Redis({ url, token });
 }
 
+// Local play-testing without an Upstash account: process-lifetime only,
+// and only ever consulted when NODE_ENV is development.
+const devMemoryStore: { champion: ChampionRecord | null } = { champion: null };
+function devMemoryStoreEnabled() {
+  return process.env.NODE_ENV === 'development';
+}
+
 export async function getChampion(): Promise<ChampionRecord | null> {
   const redis = getRedis();
-  if (!redis) return null;
-  return (await redis.get<ChampionRecord>(CHAMPION_KEY)) ?? null;
+  if (redis) return (await redis.get<ChampionRecord>(CHAMPION_KEY)) ?? null;
+  if (devMemoryStoreEnabled()) return devMemoryStore.champion;
+  return null;
 }
 
 export class LeaderboardUnavailableError extends Error {}
@@ -38,7 +46,7 @@ export async function claimChampion(candidate: {
   message: string;
 }): Promise<{ champion: ChampionRecord; accepted: boolean }> {
   const redis = getRedis();
-  if (!redis) {
+  if (!redis && !devMemoryStoreEnabled()) {
     throw new LeaderboardUnavailableError('Leaderboard is not set up yet.');
   }
 
@@ -54,6 +62,12 @@ export async function claimChampion(candidate: {
     message: candidate.message,
     updatedAt: new Date().toISOString(),
   };
-  await redis.set(CHAMPION_KEY, champion);
+
+  if (redis) {
+    await redis.set(CHAMPION_KEY, champion);
+  } else {
+    devMemoryStore.champion = champion;
+  }
+
   return { champion, accepted: true };
 }

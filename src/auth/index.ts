@@ -22,6 +22,8 @@ declare module 'next-auth' {
   }
 }
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: 'jwt' },
   pages: { signIn: '/' },
@@ -70,6 +72,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         };
       },
     }),
+    // Lets you play-test the game and leaderboard on your own machine
+    // without World App. Double-gated on NODE_ENV so it cannot exist in a
+    // real deployment even if something tries to invoke it directly.
+    ...(isDev
+      ? [
+          Credentials({
+            id: 'dev-guest',
+            name: 'Dev Guest (local testing only)',
+            credentials: {},
+            authorize: async () => {
+              if (process.env.NODE_ENV !== 'development') return null;
+              return {
+                id: 'dev-guest',
+                walletAddress: 'dev-guest',
+                username: 'dev-guest',
+                profilePictureUrl: null,
+              };
+            },
+          }),
+        ]
+      : []),
   ],
   callbacks: {
     async jwt({ token, user }) {

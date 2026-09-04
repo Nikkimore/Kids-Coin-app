@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import type { BestScoreRecord, ScreenMessageRecord } from '@/lib/leaderboard';
+import { PaymentError, payToOverrideMessage } from '@/lib/pay-message';
 import { MAX_MESSAGE_LENGTH } from '@/lib/sanitize';
-import type { ChampionRecord } from '@/lib/leaderboard';
 
 const CANVAS_WIDTH = 360;
 const CANVAS_HEIGHT = 480;
@@ -32,6 +33,7 @@ type Heart = {
 };
 
 type ClaimStatus = 'idle' | 'saving' | 'error';
+type PayStatus = 'idle' | 'paying' | 'error';
 
 function balanceKey(walletAddress?: string) {
   return `kiss-coin-balance:${walletAddress ?? 'guest'}`;
@@ -52,11 +54,18 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
   const [heartsCaught, setHeartsCaught] = useState(0);
   const [balance, setBalance] = useState(0);
 
-  const [champion, setChampion] = useState<ChampionRecord | null>(null);
+  const [bestScore, setBestScore] = useState<BestScoreRecord | null>(null);
+  const [screenMessage, setScreenMessage] = useState<ScreenMessageRecord | null>(
+    null,
+  );
   const [claimOpen, setClaimOpen] = useState(false);
   const [messageInput, setMessageInput] = useState('');
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
   const [claimError, setClaimError] = useState<string | null>(null);
+
+  const [payMessageInput, setPayMessageInput] = useState('');
+  const [payStatus, setPayStatus] = useState<PayStatus>('idle');
+  const [payError, setPayError] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = Number(localStorage.getItem(balanceKey(walletAddress)) ?? 0);
@@ -65,18 +74,24 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
 
   useEffect(() => {
     let cancelled = false;
-    const fetchChampion = async () => {
+    const fetchLeaderboard = async () => {
       try {
         const res = await fetch('/api/leaderboard');
         if (!res.ok) return;
-        const data = (await res.json()) as { champion: ChampionRecord | null };
-        if (!cancelled) setChampion(data.champion);
+        const data = (await res.json()) as {
+          bestScore: BestScoreRecord | null;
+          message: ScreenMessageRecord | null;
+        };
+        if (!cancelled) {
+          setBestScore(data.bestScore);
+          setScreenMessage(data.message);
+        }
       } catch {
         // Leaderboard is best-effort; ignore transient network errors.
       }
     };
-    fetchChampion();
-    const interval = setInterval(fetchChampion, LEADERBOARD_POLL_MS);
+    fetchLeaderboard();
+    const interval = setInterval(fetchLeaderboard, LEADERBOARD_POLL_MS);
     return () => {
       cancelled = true;
       clearInterval(interval);
@@ -84,7 +99,7 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
   }, []);
 
   // Offer the claim form once per run, right when a run beating the current
-  // champion's score ends (i.e. the player pauses).
+  // best score ends (i.e. the player pauses).
   useEffect(() => {
     if (isPlaying) {
       claimOfferedForRunRef.current = false;
@@ -93,12 +108,12 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
     if (
       !claimOfferedForRunRef.current &&
       heartsCaughtThisRunRef.current > 0 &&
-      heartsCaughtThisRunRef.current > (champion?.heartsCaught ?? 0)
+      heartsCaughtThisRunRef.current > (bestScore?.heartsCaught ?? 0)
     ) {
       claimOfferedForRunRef.current = true;
       setClaimOpen(true);
     }
-  }, [isPlaying, champion]);
+  }, [isPlaying, bestScore]);
 
   const addCoins = useCallback(
     (amount: number) => {
@@ -226,10 +241,12 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
         }),
       });
       const data = (await res.json()) as {
-        champion?: ChampionRecord;
+        bestScore?: BestScoreRecord;
+        message?: ScreenMessageRecord;
         error?: string;
       };
-      if (data.champion) setChampion(data.champion);
+      if (data.bestScore) setBestScore(data.bestScore);
+      if (data.message) setScreenMessage(data.message);
       if (!res.ok) throw new Error(data.error ?? 'Could not post your message.');
       setClaimOpen(false);
       setMessageInput('');
@@ -240,11 +257,26 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
     }
   };
 
+  const handlePaySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPayStatus('paying');
+    setPayError(null);
+    try {
+      const message = await payToOverrideMessage(payMessageInput);
+      setScreenMessage(message);
+      setPayMessageInput('');
+      setPayStatus('idle');
+    } catch (err) {
+      setPayStatus('error');
+      setPayError(err instanceof PaymentError ? err.message : 'Something went wrong.');
+    }
+  };
+
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-3">
       <div className="flex w-full items-center justify-between px-1 text-sm font-medium text-gray-600">
         <span>Hearts: {heartsCaught}</span>
-        <span>🏆 Best: {champion?.heartsCaught ?? 0}</span>
+        <span>🏆 Best: {bestScore?.heartsCaught ?? 0}</span>
         <span>🪙 {balance} Kiss Coins</span>
       </div>
       <div className="relative w-full">
@@ -261,13 +293,17 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
             if (touch) updateCatcherFromClientX(touch.clientX);
           }}
         />
-        {champion && (
+        {screenMessage && (
           <div className="pointer-events-none absolute inset-x-6 top-1/2 -translate-y-1/2 rounded-xl bg-white/90 p-3 text-center shadow-md">
             <p className="text-xs font-semibold text-pink-500">
-              🏆 {champion.username} — {champion.heartsCaught} hearts
+              {screenMessage.source === 'payment' ? '💎' : '🏆'}{' '}
+              {screenMessage.username}
+              {screenMessage.source === 'score' && bestScore
+                ? ` — ${bestScore.heartsCaught} hearts`
+                : ' — paid 1 WLD'}
             </p>
             <p className="mt-1 text-sm font-medium text-gray-700">
-              &ldquo;{champion.message}&rdquo;
+              &ldquo;{screenMessage.message}&rdquo;
             </p>
           </div>
         )}
@@ -309,6 +345,31 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
           )}
         </form>
       )}
+      <form
+        onSubmit={handlePaySubmit}
+        className="flex w-full flex-col items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3"
+      >
+        <p className="text-center text-sm font-semibold text-amber-700">
+          💎 Pay 1 WLD to set the message right now — no score needed.
+        </p>
+        <input
+          value={payMessageInput}
+          onChange={(e) => setPayMessageInput(e.target.value)}
+          maxLength={MAX_MESSAGE_LENGTH}
+          placeholder="Your message..."
+          className="w-full rounded-full border border-amber-200 px-3 py-2 text-sm"
+        />
+        <button
+          type="submit"
+          disabled={payStatus === 'paying' || !payMessageInput.trim()}
+          className="rounded-full bg-amber-500 px-6 py-2 text-sm font-semibold text-white disabled:opacity-50"
+        >
+          {payStatus === 'paying' ? 'Processing payment…' : 'Pay 1 WLD'}
+        </button>
+        {payStatus === 'error' && payError && (
+          <p className="text-xs text-red-500">{payError}</p>
+        )}
+      </form>
       {isPlaying ? (
         <button
           type="button"

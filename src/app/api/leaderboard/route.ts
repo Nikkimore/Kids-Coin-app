@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 
-import { getChampion } from '@/lib/leaderboard';
+import { getBestScore, getScreenMessage } from '@/lib/leaderboard';
 
 export async function GET() {
-  const champion = await getChampion();
-  return NextResponse.json({ champion });
+  const [bestScore, message] = await Promise.all([
+    getBestScore(),
+    getScreenMessage(),
+  ]);
+  return NextResponse.json({ bestScore, message });
 }

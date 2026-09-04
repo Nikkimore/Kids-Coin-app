@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 import { auth } from '@/auth';
-import { claimByScore, LeaderboardUnavailableError } from '@/lib/leaderboard';
+import { createPendingPayment, LeaderboardUnavailableError } from '@/lib/leaderboard';
 import { sanitizeMessage } from '@/lib/sanitize';
 
 export async function POST(request: Request) {
@@ -10,14 +10,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Not signed in.' }, { status: 401 });
   }
 
-  const body = await request.json().catch(() => null);
-  const heartsCaught = Number(body?.heartsCaught);
-  const rawMessage = typeof body?.message === 'string' ? body.message : '';
-
-  if (!Number.isInteger(heartsCaught) || heartsCaught <= 0) {
-    return NextResponse.json({ error: 'Invalid score.' }, { status: 400 });
+  if (
+    !process.env.NEXT_PUBLIC_WLD_RECEIVER_ADDRESS ||
+    !process.env.DEV_PORTAL_API_KEY
+  ) {
+    return NextResponse.json(
+      { error: 'Paid messages are not set up yet.' },
+      { status: 503 },
+    );
   }
 
+  const body = await request.json().catch(() => null);
+  const rawMessage = typeof body?.message === 'string' ? body.message : '';
   const message = sanitizeMessage(rawMessage);
   if (!message) {
     return NextResponse.json(
@@ -26,30 +30,22 @@ export async function POST(request: Request) {
     );
   }
 
+  const reference = crypto.randomUUID().replace(/-/g, '');
+
   try {
-    const { bestScore, message: screenMessage, accepted } = await claimByScore({
+    await createPendingPayment({
+      reference,
       walletAddress: session.user.walletAddress,
       username: session.user.username,
-      heartsCaught,
       message,
+      createdAt: new Date().toISOString(),
     });
-
-    if (!accepted) {
-      return NextResponse.json(
-        {
-          error: 'Someone beat your score just now — try again!',
-          bestScore,
-          message: screenMessage,
-        },
-        { status: 409 },
-      );
-    }
-
-    return NextResponse.json({ bestScore, message: screenMessage });
   } catch (err) {
     if (err instanceof LeaderboardUnavailableError) {
       return NextResponse.json({ error: err.message }, { status: 503 });
     }
     throw err;
   }
+
+  return NextResponse.json({ reference });
 }

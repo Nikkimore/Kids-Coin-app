@@ -16,13 +16,16 @@ export default async function Home() {
               <p className="text-sm font-semibold capitalize">
                 {session?.user.username}
               </p>
-              <Marble src={session?.user.profilePictureUrl} className="w-12" />
+              <Marble
+                src={session?.user.profilePictureUrl ?? undefined}
+                className="w-12"
+              />
             </div>
           }
         />
       </Page.Header>
       <Page.Main className="flex flex-col items-center justify-start gap-4 mb-16">
-        <KissCoinGame />
+        <KissCoinGame walletAddress={session?.user.walletAddress} />
       </Page.Main>
     </>
   );

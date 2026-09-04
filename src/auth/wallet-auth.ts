@@ -25,7 +25,7 @@ export async function signInWithWallet() {
 
   const { finalPayload } = await MiniKit.commandsAsync.walletAuth({
     nonce,
-    statement: 'Sign in to Kiss Coin to start catching hearts and earning coins.',
+    statement: 'Sign in to Kiss Coin to start catching kisses and earning coins.',
     expirationTime: new Date(Date.now() + 1000 * 60 * 10),
   });
 

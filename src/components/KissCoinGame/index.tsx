@@ -115,7 +115,7 @@ function drawMessageBanner(
   const label =
     `${screenMessage.source === 'payment' ? '💎' : '🏆'} ${screenMessage.username}` +
     (screenMessage.source === 'score' && bestScore
-      ? ` · ${bestScore.heartsCaught} hearts`
+      ? ` · ${bestScore.heartsCaught} kisses`
       : ' · paid 1 WLD') +
     ` — "${screenMessage.message}"`;
 
@@ -341,7 +341,7 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
           ctx.font = `${HEART_SIZE}px serif`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText('💗', heart.x, y);
+          ctx.fillText('💋', heart.x, y);
           remaining.push({ ...heart, y });
         }
         heartsRef.current = remaining;
@@ -419,7 +419,7 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-3">
       <div className="flex w-full items-center justify-between px-1 text-sm font-medium text-gray-600">
-        <span>Hearts: {heartsCaught}</span>
+        <span>Kisses: {heartsCaught}</span>
         <span>🏆 Best: {bestScore?.heartsCaught ?? 0}</span>
         <span>🪙 {balance} Kiss Coins</span>
       </div>
@@ -442,7 +442,7 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
           className="flex w-full flex-col items-center gap-2 rounded-xl border border-pink-200 bg-pink-50 p-3"
         >
           <p className="text-center text-sm font-semibold text-pink-600">
-            New high score — {heartsCaughtThisRunRef.current} hearts! Leave a
+            New high score — {heartsCaughtThisRunRef.current} kisses! Leave a
             message for everyone to see:
           </p>
           <input

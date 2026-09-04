@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Kiss Coin',
   description:
-    'Catch falling hearts and earn Kiss Coins — a fun mini game for World App.',
+    'Catch falling kisses and earn Kiss Coins — a fun mini game for World App.',
 };
 
 export default async function RootLayout({

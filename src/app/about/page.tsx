@@ -8,8 +8,8 @@ export default function AboutPage() {
       </Page.Header>
       <Page.Main className="items-start gap-4 text-left mb-16">
         <p className="text-sm text-gray-600">
-          Kiss Coin is a heart-catching mini game built for World App. Catch 3
-          falling hearts to earn 1 Kiss Coin.
+          Kiss Coin is a kiss-catching mini game built for World App. Catch 3
+          falling kisses to earn 1 Kiss Coin.
         </p>
         <p className="text-sm font-semibold text-pink-600">
           Kiss Coins are an in-app currency for fun only — they have no

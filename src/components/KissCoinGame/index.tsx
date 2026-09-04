@@ -40,6 +40,134 @@ function balanceKey(walletAddress?: string) {
   return `kiss-coin-balance:${walletAddress ?? 'guest'}`;
 }
 
+/** The player's hot air balloon, with a little pilot peeking out of the basket. */
+function drawBalloonCatcher(ctx: CanvasRenderingContext2D, catcherX: number) {
+  const basketY = CATCHER_Y;
+  const basketW = CATCHER_WIDTH;
+  const basketH = CATCHER_HEIGHT;
+  const balloonCenterY = basketY - 34;
+  const balloonRx = 22;
+  const balloonRy = 26;
+
+  ctx.strokeStyle = '#c084fc';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(catcherX - balloonRx * 0.55, balloonCenterY + balloonRy * 0.8);
+  ctx.lineTo(catcherX - basketW * 0.3, basketY);
+  ctx.moveTo(catcherX + balloonRx * 0.55, balloonCenterY + balloonRy * 0.8);
+  ctx.lineTo(catcherX + basketW * 0.3, basketY);
+  ctx.stroke();
+
+  const gradient = ctx.createRadialGradient(
+    catcherX - 8,
+    balloonCenterY - 10,
+    4,
+    catcherX,
+    balloonCenterY,
+    balloonRy,
+  );
+  gradient.addColorStop(0, '#fbcfe8');
+  gradient.addColorStop(1, '#db2777');
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.ellipse(catcherX, balloonCenterY, balloonRx, balloonRy, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(190, 24, 93, 0.35)';
+  ctx.lineWidth = 1.5;
+  for (const dx of [-11, 0, 11]) {
+    ctx.beginPath();
+    ctx.moveTo(catcherX, balloonCenterY - balloonRy);
+    ctx.quadraticCurveTo(catcherX + dx, balloonCenterY, catcherX, balloonCenterY + balloonRy);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#92400e';
+  ctx.fillRect(catcherX - basketW / 2, basketY, basketW, basketH);
+  ctx.strokeStyle = '#78350f';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(catcherX - basketW / 2, basketY, basketW, basketH);
+
+  ctx.fillStyle = '#3b82f6';
+  ctx.beginPath();
+  ctx.arc(catcherX, basketY - 1, 7, Math.PI, 0);
+  ctx.fill();
+  ctx.fillStyle = '#fde68a';
+  ctx.beginPath();
+  ctx.arc(catcherX, basketY - 8, 5, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+/**
+ * The leaderboard message, towed on a banner behind a small balloon that
+ * flies across the top of the screen on an endless loop. Runs off `time`
+ * (rAF timestamp) rather than component state, so it animates continuously
+ * whether or not a game is in progress.
+ */
+function drawMessageBanner(
+  ctx: CanvasRenderingContext2D,
+  time: number,
+  screenMessage: ScreenMessageRecord | null,
+  bestScore: BestScoreRecord | null,
+) {
+  if (!screenMessage) return;
+
+  const label =
+    `${screenMessage.source === 'payment' ? '💎' : '🏆'} ${screenMessage.username}` +
+    (screenMessage.source === 'score' && bestScore
+      ? ` · ${bestScore.heartsCaught} hearts`
+      : ' · paid 1 WLD') +
+    ` — "${screenMessage.message}"`;
+
+  ctx.font = '600 12px sans-serif';
+  const textWidth = ctx.measureText(label).width;
+  const bannerPadding = 14;
+  const bannerWidth = textWidth + bannerPadding * 2;
+  const bannerHeight = 24;
+  const ropeLength = 20;
+  const balloonR = 12;
+  const rigWidth = balloonR * 2 + ropeLength + bannerWidth + 10;
+
+  const bannerY = 40;
+  const cycle = CANVAS_WIDTH + rigWidth + 40;
+  const noseX = -rigWidth + ((time * 0.045) % cycle);
+  const balloonCx = noseX + rigWidth - balloonR;
+
+  ctx.fillStyle = '#fbbf24';
+  ctx.beginPath();
+  ctx.ellipse(balloonCx, bannerY, balloonR * 0.85, balloonR, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#78350f';
+  ctx.fillRect(balloonCx - 4, bannerY + balloonR - 2, 8, 5);
+
+  const bannerRightX = balloonCx - balloonR - ropeLength;
+  ctx.strokeStyle = '#a8a29e';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(balloonCx - balloonR + 2, bannerY + balloonR - 1);
+  ctx.lineTo(bannerRightX, bannerY);
+  ctx.stroke();
+
+  const bannerLeftX = bannerRightX - bannerWidth;
+  ctx.fillStyle = '#ffffff';
+  ctx.strokeStyle = '#ec4899';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(bannerLeftX, bannerY - bannerHeight / 2);
+  ctx.lineTo(bannerRightX, bannerY - bannerHeight / 2);
+  ctx.lineTo(bannerRightX, bannerY + bannerHeight / 2);
+  ctx.lineTo(bannerLeftX, bannerY + bannerHeight / 2);
+  ctx.lineTo(bannerLeftX - 10, bannerY);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = '#111827';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, (bannerLeftX + bannerRightX) / 2, bannerY);
+}
+
 export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const catcherXRef = useRef(CANVAS_WIDTH / 2);
@@ -50,6 +178,9 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
   const animationRef = useRef(0);
   const heartsCaughtThisRunRef = useRef(0);
   const claimOfferedForRunRef = useRef(false);
+  const isPlayingRef = useRef(false);
+  const screenMessageRef = useRef<ScreenMessageRecord | null>(null);
+  const bestScoreRef = useRef<BestScoreRecord | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [heartsCaught, setHeartsCaught] = useState(0);
@@ -67,6 +198,18 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
   const [payMessageInput, setPayMessageInput] = useState('');
   const [payStatus, setPayStatus] = useState<PayStatus>('idle');
   const [payError, setPayError] = useState<string | null>(null);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
+
+  useEffect(() => {
+    screenMessageRef.current = screenMessage;
+  }, [screenMessage]);
+
+  useEffect(() => {
+    bestScoreRef.current = bestScore;
+  }, [bestScore]);
 
   useEffect(() => {
     const stored = Number(localStorage.getItem(balanceKey(walletAddress)) ?? 0);
@@ -139,92 +282,88 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
     );
   }, []);
 
+  // Runs for the component's lifetime (not gated on isPlaying) so the
+  // balloon and the message banner stay visible and animated even when no
+  // game is in progress; heart spawning/movement only happens while playing.
   useEffect(() => {
-    if (!isPlaying) return;
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
-
-    const now = performance.now();
-    lastSpawnRef.current = now;
-    runStartRef.current = now;
 
     const tick = (time: number) => {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       ctx.fillStyle = '#fff0f5';
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      const difficulty = Math.min(
-        (time - runStartRef.current) / DIFFICULTY_RAMP_MS,
-        1,
-      );
-      const spawnInterval =
-        BASE_SPAWN_INTERVAL_MS -
-        difficulty * (BASE_SPAWN_INTERVAL_MS - MIN_SPAWN_INTERVAL_MS);
-      const speedMultiplier = 1 + difficulty * (MAX_SPEED_MULTIPLIER - 1);
+      if (isPlayingRef.current) {
+        const difficulty = Math.min(
+          (time - runStartRef.current) / DIFFICULTY_RAMP_MS,
+          1,
+        );
+        const spawnInterval =
+          BASE_SPAWN_INTERVAL_MS -
+          difficulty * (BASE_SPAWN_INTERVAL_MS - MIN_SPAWN_INTERVAL_MS);
+        const speedMultiplier = 1 + difficulty * (MAX_SPEED_MULTIPLIER - 1);
 
-      if (time - lastSpawnRef.current > spawnInterval) {
-        lastSpawnRef.current = time;
-        heartsRef.current.push({
-          id: nextHeartIdRef.current++,
-          x: Math.random() * (CANVAS_WIDTH - HEART_SIZE) + HEART_SIZE / 2,
-          y: -HEART_SIZE,
-          speed:
-            (BASE_HEART_SPEED_MIN + Math.random() * BASE_HEART_SPEED_RANGE) *
-            speedMultiplier,
-        });
-      }
-
-      const remaining: Heart[] = [];
-      for (const heart of heartsRef.current) {
-        const y = heart.y + heart.speed;
-        const withinCatcherBand = y >= CATCHER_Y - HEART_SIZE / 2 && y <= CATCHER_Y + CATCHER_HEIGHT;
-        const withinCatcherReach =
-          Math.abs(heart.x - catcherXRef.current) < CATCHER_WIDTH / 2 + HEART_SIZE / 3;
-
-        if (withinCatcherBand && withinCatcherReach) {
-          heartsCaughtThisRunRef.current += 1;
-          setHeartsCaught(heartsCaughtThisRunRef.current);
-          triggerHaptic({ hapticsType: 'impact', style: 'light' });
-          if (heartsCaughtThisRunRef.current % HEARTS_PER_COIN === 0) {
-            addCoins(1);
-            triggerHaptic({ hapticsType: 'notification', style: 'success' });
-          }
-          continue;
+        if (time - lastSpawnRef.current > spawnInterval) {
+          lastSpawnRef.current = time;
+          heartsRef.current.push({
+            id: nextHeartIdRef.current++,
+            x: Math.random() * (CANVAS_WIDTH - HEART_SIZE) + HEART_SIZE / 2,
+            y: -HEART_SIZE,
+            speed:
+              (BASE_HEART_SPEED_MIN + Math.random() * BASE_HEART_SPEED_RANGE) *
+              speedMultiplier,
+          });
         }
 
-        if (y > CANVAS_HEIGHT + HEART_SIZE) continue;
+        const remaining: Heart[] = [];
+        for (const heart of heartsRef.current) {
+          const y = heart.y + heart.speed;
+          const withinCatcherBand =
+            y >= CATCHER_Y - HEART_SIZE / 2 && y <= CATCHER_Y + CATCHER_HEIGHT;
+          const withinCatcherReach =
+            Math.abs(heart.x - catcherXRef.current) < CATCHER_WIDTH / 2 + HEART_SIZE / 3;
 
-        ctx.font = `${HEART_SIZE}px serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('💗', heart.x, y);
-        remaining.push({ ...heart, y });
+          if (withinCatcherBand && withinCatcherReach) {
+            heartsCaughtThisRunRef.current += 1;
+            setHeartsCaught(heartsCaughtThisRunRef.current);
+            triggerHaptic({ hapticsType: 'impact', style: 'light' });
+            if (heartsCaughtThisRunRef.current % HEARTS_PER_COIN === 0) {
+              addCoins(1);
+              triggerHaptic({ hapticsType: 'notification', style: 'success' });
+            }
+            continue;
+          }
+
+          if (y > CANVAS_HEIGHT + HEART_SIZE) continue;
+
+          ctx.font = `${HEART_SIZE}px serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('💗', heart.x, y);
+          remaining.push({ ...heart, y });
+        }
+        heartsRef.current = remaining;
       }
-      heartsRef.current = remaining;
 
-      ctx.fillStyle = '#ec4899';
-      ctx.beginPath();
-      ctx.roundRect(
-        catcherXRef.current - CATCHER_WIDTH / 2,
-        CATCHER_Y,
-        CATCHER_WIDTH,
-        CATCHER_HEIGHT,
-        8,
-      );
-      ctx.fill();
+      drawBalloonCatcher(ctx, catcherXRef.current);
+      drawMessageBanner(ctx, time, screenMessageRef.current, bestScoreRef.current);
 
       animationRef.current = requestAnimationFrame(tick);
     };
 
     animationRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(animationRef.current);
-  }, [isPlaying, addCoins]);
+  }, [addCoins]);
 
   const startGame = () => {
     heartsRef.current = [];
     heartsCaughtThisRunRef.current = 0;
     setHeartsCaught(0);
+    const now = performance.now();
+    lastSpawnRef.current = now;
+    runStartRef.current = now;
     setIsPlaying(true);
   };
 
@@ -284,35 +423,19 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
         <span>🏆 Best: {bestScore?.heartsCaught ?? 0}</span>
         <span>🪙 {balance} Kiss Coins</span>
       </div>
-      <div className="relative w-full">
-        <canvas
-          ref={canvasRef}
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
-          className="w-full touch-none rounded-2xl border border-pink-100 shadow-sm"
-          style={{ aspectRatio: `${CANVAS_WIDTH} / ${CANVAS_HEIGHT}` }}
-          onMouseMove={(e) => updateCatcherFromClientX(e.clientX)}
-          onTouchMove={(e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            if (touch) updateCatcherFromClientX(touch.clientX);
-          }}
-        />
-        {screenMessage && (
-          <div className="pointer-events-none absolute inset-x-6 top-1/2 -translate-y-1/2 rounded-xl bg-white/90 p-3 text-center shadow-md">
-            <p className="text-xs font-semibold text-pink-500">
-              {screenMessage.source === 'payment' ? '💎' : '🏆'}{' '}
-              {screenMessage.username}
-              {screenMessage.source === 'score' && bestScore
-                ? ` — ${bestScore.heartsCaught} hearts`
-                : ' — paid 1 WLD'}
-            </p>
-            <p className="mt-1 text-sm font-medium text-gray-700">
-              &ldquo;{screenMessage.message}&rdquo;
-            </p>
-          </div>
-        )}
-      </div>
+      <canvas
+        ref={canvasRef}
+        width={CANVAS_WIDTH}
+        height={CANVAS_HEIGHT}
+        className="w-full touch-none rounded-2xl border border-pink-100 shadow-sm"
+        style={{ aspectRatio: `${CANVAS_WIDTH} / ${CANVAS_HEIGHT}` }}
+        onMouseMove={(e) => updateCatcherFromClientX(e.clientX)}
+        onTouchMove={(e) => {
+          e.preventDefault();
+          const touch = e.touches[0];
+          if (touch) updateCatcherFromClientX(touch.clientX);
+        }}
+      />
       {claimOpen && (
         <form
           onSubmit={handleClaimSubmit}

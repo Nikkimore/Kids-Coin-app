@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { triggerHaptic } from '@/lib/haptics';
 import type { BestScoreRecord, ScreenMessageRecord } from '@/lib/leaderboard';
 import { PaymentError, payToOverrideMessage } from '@/lib/pay-message';
 import { MAX_MESSAGE_LENGTH } from '@/lib/sanitize';
@@ -184,8 +185,10 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
         if (withinCatcherBand && withinCatcherReach) {
           heartsCaughtThisRunRef.current += 1;
           setHeartsCaught(heartsCaughtThisRunRef.current);
+          triggerHaptic({ hapticsType: 'impact', style: 'light' });
           if (heartsCaughtThisRunRef.current % HEARTS_PER_COIN === 0) {
             addCoins(1);
+            triggerHaptic({ hapticsType: 'notification', style: 'success' });
           }
           continue;
         }
@@ -248,6 +251,7 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
       if (data.bestScore) setBestScore(data.bestScore);
       if (data.message) setScreenMessage(data.message);
       if (!res.ok) throw new Error(data.error ?? 'Could not post your message.');
+      triggerHaptic({ hapticsType: 'notification', style: 'success' });
       setClaimOpen(false);
       setMessageInput('');
       setClaimStatus('idle');
@@ -264,6 +268,7 @@ export function KissCoinGame({ walletAddress }: { walletAddress?: string }) {
     try {
       const message = await payToOverrideMessage(payMessageInput);
       setScreenMessage(message);
+      triggerHaptic({ hapticsType: 'notification', style: 'success' });
       setPayMessageInput('');
       setPayStatus('idle');
     } catch (err) {

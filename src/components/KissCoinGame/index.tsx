@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { MiniKit } from '@worldcoin/minikit-js';
 import { Tokens, tokenToDecimals } from '@worldcoin/minikit-js/commands';
 import { playKissSoundEffect } from './kissAudio';
+import { WalletVerification } from '@/components/WalletVerification';
 
 interface Particle {
   x: number;
@@ -1915,125 +1916,129 @@ export const KissCoinGame: React.FC = () => {
   }, [highScore, playSound]);
 
   return (
-    <div className="w-full max-w-md mx-auto flex flex-col items-center select-none text-white">
+    <div className="w-full h-full max-w-md mx-auto flex flex-col items-center select-none text-white min-h-0">
       {/* Top HUD with $KISS Crypto Token Vault & Flight Stats */}
-      <div className="w-full bg-zinc-950/90 backdrop-blur-xl rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.8)] border border-zinc-800/90 px-3 py-2.5 mb-2.5 flex items-center justify-between text-white">
-        <div className="flex items-center gap-2.5">
-          {/* Kiss Coins Badge: Significantly enlarged, glossy squircle */}
-          <div className="flex items-center gap-2">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-950/90 via-pink-900/60 to-zinc-900 border-2 border-rose-500/80 shadow-[0_0_16px_rgba(244,63,94,0.5)] flex items-center justify-center shrink-0 ring-2 ring-rose-500/30">
-              <BalloonKissIcon size={30} />
+      <div className="w-full bg-zinc-950/90 backdrop-blur-xl rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.8)] border border-zinc-800/90 px-3 py-2 mb-2 flex items-center justify-between text-white shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
+          {/* Kiss Coins Badge */}
+          <div className="flex items-center gap-1.5 shrink-0" title={`Kiss Coins: ${totalKissTokens}`}>
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-950/90 via-pink-900/60 to-zinc-900 border border-rose-500/80 shadow-[0_0_12px_rgba(244,63,94,0.4)] flex items-center justify-center shrink-0">
+              <BalloonKissIcon size={22} />
             </div>
             <div>
-              <div className="text-[10px] text-rose-400 font-black uppercase tracking-wider leading-none mb-1">
+              <div className="text-[9px] text-rose-400 font-black uppercase tracking-wider leading-none mb-0.5">
                 Kiss Coins
               </div>
-              <div className="text-lg font-black text-white leading-none drop-shadow-[0_0_8px_rgba(244,63,94,0.7)]">
+              <div className="text-sm font-black text-white leading-none drop-shadow-[0_0_8px_rgba(244,63,94,0.7)]">
                 {totalKissTokens}
               </div>
             </div>
           </div>
 
-          {/* User Highest Score (shown if player has a previous score or on game over) */}
-          {(highScore > 0 || gameState === 'gameover') && (
-            <div className="flex items-center gap-2 pl-2.5 border-l border-zinc-800 animate-fade-in" title={`Best Score: ${highScore}`}>
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-950/90 via-yellow-900/50 to-zinc-900 border-2 border-amber-500/80 shadow-[0_0_14px_rgba(245,158,11,0.4)] flex items-center justify-center text-lg shrink-0 ring-2 ring-amber-500/30">
-                🏆
-              </div>
-              <div>
-                <div className="text-[10px] text-amber-400 font-black uppercase tracking-wider leading-none mb-1">
-                  Best Score
-                </div>
-                <div className="text-lg font-black text-amber-300 leading-none">
-                  {highScore}
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Divider */}
+          <div className="w-px h-6 bg-zinc-800 shrink-0 mx-1" />
+
+          {/* Game Title directly next to Kiss Coins score */}
+          <h1 className="text-sm sm:text-base font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-400 to-amber-300 drop-shadow-[0_0_8px_rgba(244,63,94,0.4)] whitespace-nowrap truncate">
+            Balloon Kiss <span className="inline-block text-xs sm:text-sm">🎈</span>
+          </h1>
         </div>
 
-        {(gameState === 'playing' || gameState === 'paused') && (
-          <div className="flex items-center gap-2 animate-fade-in">
-            <div className="text-center bg-zinc-900/90 rounded-xl px-2.5 py-1 border border-zinc-800 shadow-inner">
-              <div className="text-[8px] text-zinc-400 font-black uppercase tracking-wider leading-none mb-0.5">Score</div>
-              <div className="text-sm font-black text-rose-400 leading-none">
-                {heartsCaught}
+        {/* Right side controls: In-flight stats during playing, or Wallet Verification & Best Score when idle */}
+        <div className="flex items-center gap-2 shrink-0">
+          {(gameState === 'playing' || gameState === 'paused') ? (
+            <div className="flex items-center gap-1.5 animate-fade-in">
+              <div className="text-center bg-zinc-900/90 rounded-xl px-2 py-1 border border-zinc-800 shadow-inner">
+                <div className="text-[7.5px] text-zinc-400 font-black uppercase tracking-wider leading-none mb-0.5">Score</div>
+                <div className="text-xs sm:text-sm font-black text-rose-400 leading-none">
+                  {heartsCaught}
+                </div>
+              </div>
+
+              <div className="text-center bg-zinc-900/90 rounded-xl px-2 py-1 border border-zinc-800 shadow-inner">
+                <div className="text-[7.5px] text-zinc-400 font-black uppercase tracking-wider leading-none mb-0.5">Kisses</div>
+                <div className="text-xs sm:text-sm font-black text-pink-400 flex items-center justify-center gap-0.5 leading-none">
+                  💋 {kissesCaught}
+                </div>
+              </div>
+
+              <div className="flex gap-0.5 items-center bg-zinc-900/90 rounded-xl px-1.5 py-1 border border-zinc-800 shadow-inner" title="Lives">
+                {[1, 2, 3].map((heartIndex) => (
+                  <span
+                    key={heartIndex}
+                    className={`text-xs transition-all duration-200 ${
+                      heartIndex <= lives ? 'scale-100 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.9)]' : 'scale-75 opacity-20 grayscale'
+                    }`}
+                  >
+                    💛
+                  </span>
+                ))}
               </div>
             </div>
-
-            <div className="text-center bg-zinc-900/90 rounded-xl px-2.5 py-1 border border-zinc-800 shadow-inner">
-              <div className="text-[8px] text-zinc-400 font-black uppercase tracking-wider leading-none mb-0.5">Kisses</div>
-              <div className="text-sm font-black text-pink-400 flex items-center justify-center gap-0.5 leading-none">
-                💋 {kissesCaught}
-              </div>
-            </div>
-
-            <div className="flex gap-0.5 items-center bg-zinc-900/90 rounded-xl px-2 py-1 border border-zinc-800 shadow-inner" title="Lives (Yellow Hearts Keep You Alive!)">
-              {[1, 2, 3].map((heartIndex) => (
-                <span
-                  key={heartIndex}
-                  className={`text-sm transition-all duration-200 ${
-                    heartIndex <= lives ? 'scale-100 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.9)]' : 'scale-75 opacity-20 grayscale'
-                  }`}
-                >
-                  💛
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <button
-          type="button"
-          onClick={() => setSoundEnabled(!soundEnabled)}
-          className="w-8 h-8 rounded-full bg-zinc-900 hover:bg-zinc-850 border border-zinc-700/80 text-zinc-300 flex items-center justify-center transition-all active:scale-95 shadow-xs shrink-0 ml-1 cursor-pointer"
-          title={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
-          aria-label={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
-        >
-          {soundEnabled ? (
-            <svg
-              className="w-4 h-4 text-zinc-200"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-            </svg>
           ) : (
-            <svg
-              className="w-4 h-4 text-zinc-500"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-              <line x1="22" y1="9" x2="16" y2="15" />
-              <line x1="16" y1="9" x2="22" y2="15" />
-            </svg>
+            <div className="flex items-center gap-2 animate-fade-in">
+              <WalletVerification mode="compact" />
+              {highScore > 0 && (
+                <div className="hidden xs:flex items-center gap-1 bg-zinc-900/90 border border-amber-500/30 rounded-xl px-2 py-1" title={`Best: ${highScore}`}>
+                  <span className="text-xs">🏆</span>
+                  <span className="text-xs font-black text-amber-300">{highScore}</span>
+                </div>
+              )}
+            </div>
           )}
-        </button>
+
+          <button
+            type="button"
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className="w-8 h-8 rounded-full bg-zinc-900 hover:bg-zinc-850 border border-zinc-700/80 text-zinc-300 flex items-center justify-center transition-all active:scale-95 shadow-xs shrink-0 cursor-pointer"
+            title={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
+            aria-label={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
+          >
+            {soundEnabled ? (
+              <svg
+                className="w-4 h-4 text-zinc-200"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+              </svg>
+            ) : (
+              <svg
+                className="w-4 h-4 text-zinc-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <line x1="22" y1="9" x2="16" y2="15" />
+                <line x1="16" y1="9" x2="22" y2="15" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
 
-      <div className="relative w-full aspect-[4/5] max-h-[530px] rounded-[36px] overflow-hidden border-2 border-zinc-800 shadow-[0_0_50px_rgba(244,63,94,0.25)] bg-black ring-1 ring-rose-500/20">
+      <div className="relative flex-1 w-full rounded-[28px] sm:rounded-[36px] overflow-hidden border-2 border-zinc-800 shadow-[0_0_50px_rgba(244,63,94,0.25)] bg-black ring-1 ring-rose-500/20 min-h-0">
         <canvas ref={canvasRef} className="w-full h-full block cursor-grab active:cursor-grabbing touch-none" />
 
-        {/* Start / Idle Screen: Ultra-Clean Minimalist Picture + Big PLAY GAME Button */}
+        {/* Start / Idle Screen: Solid Black Minimalist Picture + Big PLAY GAME Button (No Transparency) */}
         {gameState === 'idle' && (
-          <div className="absolute inset-0 bg-black/75 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-fade-in text-white z-20">
+          <div className="absolute inset-0 bg-black flex flex-col items-center justify-center p-6 text-center animate-fade-in text-white z-30">
             <div className="flex flex-col items-center text-center">
               
               {/* Picture: High-Res Balloon Kiss Artwork with Glowing Neon Rose Frame */}
               <KissBalloonIcon
-                className="w-36 h-36 sm:w-40 sm:h-40 rounded-[32px] overflow-hidden border-2 border-rose-500/80 shadow-[0_0_40px_rgba(244,63,94,0.65)] ring-2 ring-rose-500/30 mb-8 transition-transform hover:scale-105"
-                size={160}
+                className="w-36 h-36 sm:w-44 sm:h-44 rounded-[32px] overflow-hidden border-2 border-rose-500/80 shadow-[0_0_40px_rgba(244,63,94,0.65)] ring-2 ring-rose-500/30 mb-8 transition-transform hover:scale-105"
+                size={176}
               />
 
               {/* BIG PLAY GAME Button */}
@@ -2116,9 +2121,9 @@ export const KissCoinGame: React.FC = () => {
                         />
                         <button
                           type="submit"
-                          className="px-3 py-2 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-xs font-black rounded-xl shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
+                          className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-xs font-black rounded-xl shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
                         >
-                          Fly 👑
+                          Send
                         </button>
                       </div>
                     </form>

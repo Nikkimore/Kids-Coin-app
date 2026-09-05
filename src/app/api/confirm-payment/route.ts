@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const appId = process.env.NEXT_PUBLIC_APP_ID || process.env.APP_ID;
+    const appId =
+      process.env.NEXT_PUBLIC_APP_ID ||
+      process.env.APP_ID ||
+      'app_50930aa723f8df87d769869a70d29693';
     const apiKey = process.env.DEV_PORTAL_API_KEY;
 
     // If API key and App ID are configured, verify with Developer Portal

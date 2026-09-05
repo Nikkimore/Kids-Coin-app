@@ -6,13 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * @see https://docs.world.org/world-id/idkit/integrate#step-5-verify-the-proof-in-your-backend
  */
 export async function POST(req: NextRequest) {
-  const expectedRpId = process.env.RP_ID;
-  if (!expectedRpId) {
-    return NextResponse.json(
-      { error: 'RP_ID not configured' },
-      { status: 500 },
-    );
-  }
+  const expectedRpId = process.env.RP_ID ?? 'rp_1a6cc930655edae7';
 
   const { rp_id, idkitResponse } = (await req.json()) as {
     rp_id?: string;

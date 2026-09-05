@@ -34,7 +34,7 @@ export default function ClientProviders({
 }: ClientProvidersProps) {
   return (
     <ErudaProvider>
-      <MiniKitProvider props={{ appId: process.env.NEXT_PUBLIC_APP_ID }}>
+      <MiniKitProvider props={{ appId: process.env.NEXT_PUBLIC_APP_ID || 'app_50930aa723f8df87d769869a70d29693' }}>
         <SessionProvider session={session}>{children}</SessionProvider>
       </MiniKitProvider>
     </ErudaProvider>

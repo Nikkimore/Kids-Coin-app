@@ -39,7 +39,7 @@ export const Verify = ({ action }: { action: string }) => {
 
       // Use IDKit request API
       const request = await IDKit.request({
-        app_id: process.env.NEXT_PUBLIC_APP_ID as `app_${string}`,
+        app_id: (process.env.NEXT_PUBLIC_APP_ID || 'app_50930aa723f8df87d769869a70d29693') as `app_${string}`,
         action,
         rp_context: rpContext,
         allow_legacy_proofs: true,

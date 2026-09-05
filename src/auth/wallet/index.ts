@@ -24,7 +24,7 @@ export const walletAuth = async () => {
     nonce,
     expirationTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     notBefore: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    statement: `Sign in to Balloon Kiss on World App (${crypto.randomUUID().replace(/-/g, '').slice(0, 8)}).`,
+    statement: 'Verify you are human to play Balloon Kiss',
   });
 
   console.log('MiniKit walletAuth result:', result);
@@ -43,7 +43,7 @@ export const walletAuth = async () => {
   }
 
   return await signIn('credentials', {
-    redirectTo: '/',
+    redirect: false,
     nonce,
     signedNonce,
     finalPayloadJson: JSON.stringify({

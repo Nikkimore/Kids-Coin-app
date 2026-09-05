@@ -1,14 +1,15 @@
 import { auth } from '@/auth';
 import { Page } from '@/components/PageLayout';
 import { KissCoinGame } from '@/components/KissCoinGame';
-import { Marble, TopBar } from '@worldcoin/mini-apps-ui-kit-react';
+import { TopBar, Marble } from '@worldcoin/mini-apps-ui-kit-react';
+import { AuthButton } from '@/components/AuthButton';
 import Image from 'next/image';
 
 export default async function Home() {
   const session = await auth();
 
   return (
-    <>
+    <Page>
       <Page.Header className="p-0">
         <TopBar
           title="Balloon Kiss"
@@ -26,17 +27,25 @@ export default async function Home() {
           }
           endAdornment={
             <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold capitalize">
-                {session?.user?.username}
-              </p>
-              <Marble src={session?.user?.profilePictureUrl} className="w-12" />
+              {session?.user ? (
+                <>
+                  <p className="text-sm font-semibold capitalize text-gray-700">
+                    {session.user.username || 'Pilot'}
+                  </p>
+                  <Marble src={session.user.profilePictureUrl} className="w-8 h-8" />
+                </>
+              ) : (
+                <div className="scale-90">
+                  <AuthButton />
+                </div>
+              )}
             </div>
           }
         />
       </Page.Header>
-      <Page.Main className="flex flex-col items-center justify-start gap-4 mb-16">
+      <Page.Main className="flex flex-col items-center justify-start gap-4 mb-8">
         <KissCoinGame />
       </Page.Main>
-    </>
+    </Page>
   );
 }

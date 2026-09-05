@@ -1,0 +1,2939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Balloon Kiss - World App Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rubik:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #FF3366;
+      --primary-hover: #E02456;
+      --primary-light: #FFF0F3;
+      --primary-glow: rgba(255, 51, 102, 0.4);
+      --surface: #FFFFFF;
+      --background: #FFF5F7;
+      --text: #1F2937;
+      --text-muted: #6B7280;
+      --accent-gold: #F59E0B;
+      --accent-gold-light: #FEF3C7;
+      --success: #10B981;
+      --danger: #EF4444;
+      --border: #FCE7F0;
+      --font-display: 'Rubik', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #0f172a;
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    /* Outer Presentation Frame (Phone Mockup) */
+    .app-viewport, .device-frame {
+      width: 100%;
+      max-width: 412px;
+      height: 840px;
+      max-height: 94vh;
+      background: #FFFFFF;
+      border-radius: 44px;
+      box-shadow: 
+        0 24px 60px -12px rgba(0, 0, 0, 0.55),
+        0 0 0 10px #1E2336,
+        0 0 0 12px #2E3650;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Top device status notch */
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #111;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+
+    .status-bar .notch-speaker {
+      width: 100px;
+      height: 20px;
+      background: #000;
+      border-radius: 20px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .status-bar .notch-lens {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #0d1224;
+      border: 1px solid #1f2742;
+    }
+
+    /* World App Top Navigation Bar */
+    .top-header {
+      padding: 6px 18px 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: #FFFFFF;
+      z-index: 90;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.35);
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      flex-shrink: 0;
+      background: #FFF0F5;
+    }
+
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      background: #F3F4F6;
+      color: #4B5563;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: 2px;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      padding: 4px 10px 4px 6px;
+      border-radius: 30px;
+    }
+
+    .marble-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: conic-gradient(from 180deg, #FF5722, #9C27B0, #3F51B5, #00BCD4, #4CAF50, #FFEB3B, #FF5722);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      position: relative;
+    }
+
+    .verified-check {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      background: #10B981;
+      border: 1.5px solid #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 8px;
+      font-weight: bold;
+    }
+
+    .user-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #1F2937;
+    }
+
+    /* Screen Views */
+    .screen-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: #FAFAFC;
+    }
+
+    .tab-view {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      padding: 16px 18px;
+    }
+
+    .tab-view.active {
+      display: flex;
+    }
+
+    /* HUD Stats Bar */
+    .hud-bar {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 7px 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #F1F4F9;
+      box-shadow: 0 3px 12px -2px rgba(0, 0, 0, 0.04);
+      margin-bottom: 10px;
+    }
+
+    .hud-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .coin-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #FFD54F, #FFA000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      box-shadow: 0 3px 8px rgba(255, 160, 0, 0.35);
+    }
+
+    .coin-label {
+      font-size: 8.5px;
+      font-weight: 750;
+      color: #8E95A5;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .coin-value {
+      font-family: 'Rubik', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: #B45309;
+      line-height: 1.1;
+    }
+
+    .hearts-stat {
+      text-align: center;
+    }
+
+    .hearts-label {
+      font-size: 8.5px;
+      font-weight: 750;
+      color: #8E95A5;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .hearts-count {
+      font-family: 'Rubik', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: #FF3366;
+      line-height: 1.1;
+    }
+
+    .hearts-sub {
+      font-size: 10px;
+      font-weight: 600;
+      color: #9CA3AF;
+    }
+
+    .lives-rack {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .life-heart {
+      font-size: 13px;
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .life-heart.lost {
+      opacity: 0.2;
+      filter: grayscale(1);
+      transform: scale(0.8);
+    }
+
+    .sound-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 1px solid #E5E7EB;
+      background: #F9FAFB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Progress bar to next Kiss Coin */
+    .coin-progress-track {
+      height: 6px;
+      width: 100%;
+      background: #FEE2E2;
+      border-radius: 99px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .coin-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #FF6B8B, #FF3366, #FFA000);
+      border-radius: 99px;
+      transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Canvas Arena */
+    .canvas-card {
+      flex: 1;
+      width: 100%;
+      min-height: 420px;
+      background: linear-gradient(180deg, #FFF6F8 0%, #FFE9EF 100%);
+      border-radius: 28px;
+      border: 2px solid #FFD6E0;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 30px -8px rgba(255, 51, 102, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+      touch-action: none;
+    }
+    #gameCanvas:active {
+      cursor: grabbing;
+    }
+
+    /* Modals / Overlays */
+    .game-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      z-index: 30;
+      transition: opacity 0.25s ease;
+    }
+
+    .game-overlay.hidden {
+      display: none;
+    }
+
+    .overlay-icon {
+      width: 112px;
+      height: 112px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      animation: gentle-pulse 2.4s infinite ease-in-out;
+    }
+
+    @keyframes gentle-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    .overlay-title {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Rubik', sans-serif;
+      font-size: 25px;
+      font-weight: 900;
+      color: #0F172A;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .overlay-desc {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #1E293B;
+      font-weight: 500;
+      max-width: 290px;
+      margin-bottom: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .btn-action {
+      width: 100%;
+      max-width: 270px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #FF3366, #E02456);
+      color: #FFFFFF;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 51, 102, 0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-action:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 12px rgba(255, 51, 102, 0.25);
+    }
+
+    .stats-card-result {
+      background: #FFFBEB;
+      border: 1.5px solid #FDE68A;
+      border-radius: 18px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%;
+      max-width: 270px;
+      margin-bottom: 16px;
+    }
+
+    .res-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: #92400E;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .res-val {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: #B45309;
+    }
+
+    .res-divider {
+      width: 1px;
+      height: 32px;
+      background: #FCD34D;
+    }
+
+    .controls-hint {
+      margin-top: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+      text-align: center;
+    }
+
+    /* World Bottom Navigation */
+    .bottom-nav {
+      height: 70px;
+      background: #FFFFFF;
+      border-top: 1px solid #EDF1F7;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 10px;
+      z-index: 50;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #94A3B8;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 12px;
+      transition: color 0.18s;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .nav-item.active {
+      color: #FF3366;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 2.2;
+    }
+
+    /* Wallet View */
+    .wallet-card {
+      background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+      border-radius: 24px;
+      padding: 22px;
+      color: #FFFFFF;
+      box-shadow: 0 14px 30px -6px rgba(30, 27, 75, 0.4);
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wallet-card::after {
+      content: '💋';
+      position: absolute;
+      right: -10px;
+      bottom: -20px;
+      font-size: 100px;
+      opacity: 0.12;
+    }
+
+    .wallet-balance-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #A5B4FC;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .wallet-balance-num {
+      font-family: 'Rubik', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: #FFD54F;
+      margin: 4px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .wallet-btn-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .wallet-action-btn {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      text-align: center;
+    }
+
+    .wallet-action-btn.primary {
+      background: #FF3366;
+      border-color: #FF3366;
+    }
+
+    .section-header {
+      font-size: 14px;
+      font-weight: 800;
+      color: #374151;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .history-item {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #F1F5F9;
+    }
+
+    .history-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .history-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: #FFF1F2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .history-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #1F2937;
+    }
+
+    .history-date {
+      font-size: 11px;
+      color: #9CA3AF;
+    }
+
+    .history-amt {
+      font-family: 'Rubik', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: #10B981;
+    }
+
+    /* Leaderboard View */
+    .leader-row {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #F1F5F9;
+      margin-bottom: 8px;
+    }
+
+    .leader-row.gold {
+      background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+      border-color: #FCD34D;
+    }
+
+    .leader-rank {
+      font-family: 'Rubik', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      width: 24px;
+      color: #6B7280;
+    }
+
+    .leader-row.gold .leader-rank {
+      color: #D97706;
+    }
+
+    /* Settings View */
+    .settings-group {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 6px 16px;
+      border: 1px solid #F1F5F9;
+      margin-bottom: 16px;
+    }
+
+    .setting-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid #F8FAFC;
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-label {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #1F2937;
+    }
+
+    /* Switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #E2E8F0;
+      transition: .3s;
+      border-radius: 34px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    input:checked + .toggle-slider {
+      background-color: #FF3366;
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-30px);
+      opacity: 0;
+      pointer-events: none;
+      background: #111827;
+      color: #FFFFFF;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 100;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- App Simulation Shell -->
+  <div class="app-viewport">
+    <!-- Simulated Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="notch-speaker">
+        <div class="notch-lens"></div>
+      </div>
+      <div style="display:flex; gap: 4px; align-items:center;">
+        <span>5G</span>
+        <span>100%</span>
+      </div>
+    </div>
+
+    <!-- World App Mini App Header -->
+    <div class="top-header">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <img src="preview-icon-v2.jpg" alt="Balloon Kiss" />
+        </div>
+        <div>
+          <span class="brand-title">Balloon Kiss</span>
+          <span class="brand-tag">World App</span>
+        </div>
+      </div>
+
+      <div class="user-profile" title="World ID Verified Profile">
+        <div class="marble-avatar">
+          <div class="verified-check">✓</div>
+        </div>
+        <span class="user-name">Pedro.world</span>
+      </div>
+    </div>
+
+    <!-- Screen Containers -->
+    <div class="screen-container">
+
+      <!-- ================= 1. HOME / GAME TAB ================= -->
+      <div id="tab-home" class="tab-view active">
+        <!-- Live HUD Status -->
+        <div class="hud-bar">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <!-- Kiss Coins Badge -->
+            <div class="hud-stat">
+              <div style="width:28px; height:28px; border-radius:9px; background:#FFF0F5; border:1px solid #FDA4AF; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(244,63,94,0.15); flex-shrink:0;">
+                <svg width="19" height="15" viewBox="-11 -7 22 15" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 1px 2px rgba(225,29,72,0.25));">
+                  <!-- Upper lip with Cupid's bow -->
+                  <path d="M-10,0 C-6,-5.5 -2,-4.5 0,-2.5 C2,-4.5 6,-5.5 10,0 C6,1.2 2,-1 0,0 C-2,-1 -6,1.2 -10,0 Z" fill="#E11D48"/>
+                  <!-- Lower lip voluptuous curve -->
+                  <path d="M-9,1 C-5,7.5 5,7.5 9,1 C5,2.2 -5,2.2 -9,1 Z" fill="#FF2E63"/>
+                  <!-- Specular gloss highlight -->
+                  <ellipse cx="-2.5" cy="2.8" rx="1.5" ry="0.9" fill="#FFFFFF" opacity="0.85"/>
+                </svg>
+              </div>
+              <div>
+                <div class="coin-label" style="color:#BE123C; font-weight:800;">Kiss Coins</div>
+                <div class="coin-value" id="hudKissCoins" style="color:#E11D48;">0</div>
+              </div>
+            </div>
+
+            <!-- Best Score (Shown if they have a previous score) -->
+            <div class="hud-stat" id="hudBestStat" style="display:none; padding-left:7px; border-left:1px solid #E2E8F0;" title="Your Highest Score">
+              <div style="width:28px; height:28px; border-radius:9px; background:#FFFBEB; border:1px solid #FDE68A; display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:0 2px 6px rgba(245,158,11,0.18); flex-shrink:0;">🏆</div>
+              <div>
+                <div class="coin-label" style="color:#92400E; font-weight:800;">Best Score</div>
+                <div class="coin-value" id="hudBestScore" style="color:#B45309;">0</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="hudGameplayStats" style="display:none; align-items:center; gap:8px;">
+            <div class="hearts-stat">
+              <div class="hearts-label">Score</div>
+              <div>
+                <span class="hearts-count" id="hudHearts">0</span>
+              </div>
+            </div>
+
+            <div class="hearts-stat">
+              <div class="hearts-label">Kisses</div>
+              <div>
+                <span class="hearts-count" id="hudKisses" style="color:#FF1493;">0</span>
+              </div>
+            </div>
+
+            <div class="lives-rack" id="livesContainer" title="Lives (Yellow Hearts Keep You Alive!)">
+              <span class="life-heart" id="life1">💛</span>
+              <span class="life-heart" id="life2">💛</span>
+              <span class="life-heart" id="life3">💛</span>
+            </div>
+          </div>
+
+          <button class="sound-btn" id="soundToggleBtn" title="Toggle Sound" aria-label="Toggle Sound">
+            <svg id="soundSvgOn" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+            <svg id="soundSvgOff" style="display:none;" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="22" y1="9" x2="16" y2="15"></line>
+              <line x1="16" y1="9" x2="22" y2="15"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Interactive Canvas Arena -->
+        <div class="canvas-card">
+          <canvas id="gameCanvas"></canvas>
+
+          <!-- Idle Start Screen (Ultra-Minimal & Clean) -->
+          <div class="game-overlay" id="startOverlay">
+            <div class="overlay-icon">
+              <img src="preview-icon-v2.jpg" alt="Balloon Kiss" style="width: 112px; height: 112px; border-radius: 30px; object-fit: cover; box-shadow: 0 14px 32px rgba(244,63,94,0.42); border: 2px solid rgba(255,255,255,0.9); user-select: none;" />
+            </div>
+            <h1 class="overlay-title" style="margin-bottom: 16px;">Balloon Kiss</h1>
+
+            <!-- Active Sky Banner Pill -->
+            <div style="background:rgba(254, 243, 199, 0.8); border:1px solid #FDE68A; border-radius:16px; padding:7px 12px; margin-bottom:20px; width:100%; max-width:280px; display:flex; align-items:center; justify-content:space-between; gap:8px; box-shadow:0 1px 4px rgba(245, 158, 11, 0.08);">
+              <div style="display:flex; align-items:center; gap:6px; overflow:hidden; min-width:0;">
+                <span id="startBannerIcon" style="font-size:16px; flex-shrink:0;">👑</span>
+                <span id="startBannerPreview" style="font-size:12px; font-weight:700; color:#1E293B; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">"Kiss the sky! 💋"</span>
+              </div>
+              <button id="overrideStartBtn" style="padding:4px 8px; background:#F59E0B; color:#fff; border:none; border-radius:8px; font-size:10px; font-weight:800; cursor:pointer; white-space:nowrap; flex-shrink:0;" title="Override with 1 WLD">1 WLD</button>
+            </div>
+
+            <button class="btn-action" id="startBtn" style="width: 100%; max-width: 280px; height: 54px; padding: 0 20px; font-size: 16px; font-weight: 800; border-radius: 16px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 8px 20px rgba(255, 51, 102, 0.35); border: none; cursor: pointer; transition: transform 0.15s ease;">
+              <span>Play Game</span>
+              <span style="font-size: 18px;">🎈</span>
+            </button>
+            <button id="payBannerMainBtn" style="width: 100%; max-width: 280px; height: 54px; padding: 6px 14px; background: linear-gradient(135deg, #F59E0B, #EA580C); color: #fff; border: 1.5px solid rgba(253, 230, 138, 0.7); border-radius: 16px; cursor: pointer; box-shadow: 0 6px 18px rgba(245, 158, 11, 0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; line-height: 1.2; transition: transform 0.15s ease;">
+              <span style="font-size: 12.5px; font-weight: 800; letter-spacing: -0.1px;">Leave a message on the balloon</span>
+              <span style="font-size: 13.5px; font-weight: 800; color: #FFFBEB; display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 3px;">
+                <span style="font-size: 14px;">💎</span>
+                <span>1 Hour — 1 WLD</span>
+              </span>
+            </button>
+            <!-- Rules Guide Pill -->
+            <div style="margin-top:10px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; padding:5px 10px; border-radius:12px; border:1px solid #E2E8F0;">
+              <span style="color:#E11D48;">❤️ Catch = Score</span>
+              <span>•</span>
+              <span style="color:#D97706;">💔 Miss Heart = -1 Life</span>
+              <span>•</span>
+              <span style="color:#E11D48;">💋 Kiss = $KISS</span>
+            </div>
+          </div>
+
+          <!-- Game Over Screen (Clean & Minimal) -->
+          <div class="game-overlay hidden" id="gameOverOverlay">
+            <div id="gameOverIcon" style="font-size: 40px; margin-bottom: 4px;">🎈</div>
+            <h2 class="overlay-title" id="gameOverTitle" style="margin-bottom: 12px;">Game Over</h2>
+
+            <!-- Clean Score Card -->
+            <div style="display:flex; align-items:center; justify-content:center; gap:24px; background:rgba(253, 242, 248, 0.7); border:1px solid #FCE7F3; border-radius:18px; padding:12px 24px; margin-bottom:18px; width:100%; max-width:280px;">
+              <div style="text-align:center;">
+                <div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:0.5px;">Score</div>
+                <div id="resFlightScore" style="font-size:24px; font-weight:900; color:#E11D48; line-height:1.1;">0</div>
+              </div>
+              <div style="width:1px; height:32px; background:#FBCFE8;"></div>
+              <div style="text-align:center;">
+                <div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:0.5px;">Best Score</div>
+                <div id="resBest" style="font-size:24px; font-weight:900; color:#1E293B; line-height:1.1;">0</div>
+              </div>
+            </div>
+
+            <!-- New High Score Composer (Only shown when record broken) -->
+            <div id="newRecordBannerBox" style="display:none; width:100%; max-width:280px; margin-bottom:14px;">
+              <div style="display:flex; gap:6px;">
+                <input id="bannerTextInput" type="text" maxlength="65" placeholder="Your banner message..." style="flex:1; padding:8px 12px; border-radius:12px; border:1.5px solid #FCD34D; font-size:12px; color:#0F172A; background:#fff; outline:none;" />
+                <button id="saveBannerBtn" style="padding:8px 14px; background:linear-gradient(135deg, #F59E0B, #EA580C); color:#fff; border:none; border-radius:12px; font-size:12px; font-weight:900; cursor:pointer; white-space:nowrap;">Fly 👑</button>
+              </div>
+              <div id="bannerSavedFeedback" style="display:none; color:#047857; font-size:11px; font-weight:800; text-align:center; background:#ECFDF5; padding:6px; border-radius:8px; margin-top:6px;">✓ Flying on balloon banner!</div>
+            </div>
+
+            <!-- Play Again Button -->
+            <button class="btn-action" id="retryBtn" style="width:100%; max-width:260px; padding:12px 24px; font-size:16px; border-radius:16px; margin-bottom:8px;">Play Again 🎈</button>
+
+            <!-- Prominent Direct Button: Leave a message on the balloon for 1 hour — 1 WLD -->
+            <button id="payBannerGameOverBtn" style="width:100%; max-width:280px; padding:11px 16px; background:linear-gradient(135deg, #F59E0B, #E11D48); color:#fff; border:none; border-radius:16px; font-size:12px; font-weight:800; cursor:pointer; box-shadow:0 4px 14px rgba(245, 158, 11, 0.35); display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:12px;">
+              <span>💎</span>
+              <span>Leave a message on the balloon for 1 hour — 1 WLD</span>
+            </button>
+          </div>
+
+          <!-- VIP 1 WLD Override Modal -->
+          <div id="vipModal" class="game-overlay hidden" style="background:rgba(0,0,0,0.65); z-index:90;">
+            <div style="background:linear-gradient(to bottom, #FFFBEB, #FFFFFF, #FFF0F5); border:2px solid #F59E0B; border-radius:22px; padding:16px; width:100%; max-width:300px; text-align:left; box-shadow:0 14px 34px rgba(0,0,0,0.35);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:32px; height:32px; border-radius:10px; background:#FEF3C7; border:1px solid #FDE68A; display:flex; align-items:center; justify-content:center; font-size:18px;">💎</div>
+                  <div>
+                    <div style="font-size:12px; font-weight:900; color:#78350F; text-transform:uppercase; letter-spacing:0.5px;">VIP Sky Banner</div>
+                    <div style="font-size:10px; font-weight:700; color:#D97706;">Guaranteed 1-Hour Shield • 1 WLD</div>
+                  </div>
+                </div>
+                <button id="closeVipModalBtn" style="width:24px; height:24px; border-radius:50%; background:#F3F4F6; border:none; font-size:12px; font-weight:bold; cursor:pointer; color:#6B7280;">✕</button>
+              </div>
+
+              <!-- Clear Explanation Card -->
+              <div style="background:rgba(254, 243, 199, 0.75); border:1px solid #FDE68A; border-radius:14px; padding:10px 12px; margin-bottom:10px; font-size:11px; color:#78350F; display:flex; flex-direction:column; gap:6px; line-height:1.35;">
+                <div style="display:flex; align-items:flex-start; gap:6px;">
+                  <span style="font-size:12px; flex-shrink:0;">⏱️</span>
+                  <span><strong>1-Hour Guaranteed Flight:</strong> Your custom message flies across the hot air balloon banner for 60 minutes for every player worldwide.</span>
+                </div>
+                <div style="display:flex; align-items:flex-start; gap:6px;">
+                  <span style="font-size:12px; flex-shrink:0;">🛡️</span>
+                  <span><strong>Protected Shield:</strong> High scores cannot bump your banner during your hour. New champions are queued to fly right after your 60 minutes finish.</span>
+                </div>
+                <div style="display:flex; align-items:flex-start; gap:6px;">
+                  <span style="font-size:12px; flex-shrink:0;">🌍</span>
+                  <span><strong>Live Global Broadcast:</strong> Show your handle, shoutout, or greeting live to all World App users.</span>
+                </div>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-size:10px; font-weight:800; color:#6B7280; text-transform:uppercase;">Your VIP Message</div>
+                    <span id="vipCharCount" style="font-size:9.5px; color:#9CA3AF;">0/65</span>
+                  </div>
+                  <input id="vipTextInput" type="text" maxlength="65" placeholder="Your VIP message (e.g. Kiss the sky! 💋)" style="width:100%; margin-top:2px; padding:7px 10px; border-radius:10px; border:1.5px solid #FCD34D; font-size:11.5px; background:#fff; outline:none; font-weight:500;" />
+                </div>
+
+                <div style="background:#FFF; border:1px solid #FDE68A; border-radius:10px; padding:6px 10px; font-size:10.5px; color:#78350F; display:flex; align-items:center; justify-content:space-between;">
+                  <span style="display:flex; align-items:center; gap:6px; font-weight:800;">
+                    <span>🪙</span> Cost: 1.0 WLD
+                  </span>
+                  <span style="font-size:10px; font-weight:700; background:#FEF3C7; color:#B45309; padding:2px 6px; border-radius:6px;">60 Min Shield</span>
+                </div>
+
+                <div id="vipPayStatus" style="display:none; font-size:11px; font-weight:800; text-align:center; padding:7px; border-radius:10px;"></div>
+
+                <button id="submitVipPayBtn" style="width:100%; padding:10px; background:linear-gradient(135deg, #F59E0B, #E11D48, #DB2777); color:#fff; border:none; border-radius:12px; font-size:12px; font-weight:900; cursor:pointer; box-shadow:0 4px 12px rgba(245, 158, 11, 0.35); display:flex; align-items:center; justify-content:center; gap:6px;">
+                  Pay 1 WLD (Fly for 1 Hour 💎)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls-hint">
+          Steer the Hot Air Balloon across the sky to catch kisses and hearts!
+        </div>
+      </div>
+
+      <!-- ================= 2. WALLET TAB ================= -->
+      <div id="tab-wallet" class="tab-view">
+        <div class="wallet-card">
+          <div class="wallet-balance-label">Total Kiss Coins</div>
+          <div class="wallet-balance-num">
+            <span>🪙</span>
+            <span id="walletTotalCoins">0</span>
+            <span style="font-size:16px; color:#FCD34D; font-weight:600;">KISS</span>
+          </div>
+          <div class="wallet-btn-row">
+            <button class="wallet-action-btn primary" id="claimRewardBtn">Claim In World App</button>
+            <button class="wallet-action-btn" id="transferBtn">Share With Friends</button>
+          </div>
+        </div>
+
+        <div class="section-header">Recent Activity</div>
+        <div class="history-list" id="activityList">
+          <div class="history-item">
+            <div class="history-left">
+              <div class="history-icon">🎮</div>
+              <div>
+                <div class="history-title">Game Session Reward</div>
+                <div class="history-date">Just now</div>
+              </div>
+            </div>
+            <div class="history-amt">+0 KISS</div>
+          </div>
+          <div class="history-item">
+            <div class="history-left">
+              <div class="history-icon">🎁</div>
+              <div>
+                <div class="history-title">Welcome Bonus</div>
+                <div class="history-date">Today</div>
+              </div>
+            </div>
+            <div class="history-amt">+5 KISS</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3. LEADERBOARD TAB ================= -->
+      <div id="tab-leaderboard" class="tab-view">
+        <div class="section-header" style="margin-top:4px;">Top Catchers Today</div>
+
+        <div class="leader-row gold">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="leader-rank">🥇</div>
+            <div class="marble-avatar" style="width:34px; height:34px; background: conic-gradient(#FF3366, #FF9800, #4CAF50);"></div>
+            <div>
+              <div style="font-size:14px; font-weight:800; color:#1F2937;">cryptoqueen.world</div>
+              <div style="font-size:11px; color:#D97706; font-weight:700;">84 Kiss Coins</div>
+            </div>
+          </div>
+          <div style="font-family:'Rubik'; font-weight:800; font-size:15px; color:#D97706;">252 ❤️</div>
+        </div>
+
+        <div class="leader-row">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="leader-rank">🥈</div>
+            <div class="marble-avatar" style="width:34px; height:34px; background: conic-gradient(#9C27B0, #3F51B5, #00BCD4);"></div>
+            <div>
+              <div style="font-size:14px; font-weight:800; color:#1F2937;">satoshi_heart</div>
+              <div style="font-size:11px; color:#6B7280; font-weight:600;">62 Kiss Coins</div>
+            </div>
+          </div>
+          <div style="font-family:'Rubik'; font-weight:800; font-size:15px; color:#4B5563;">186 ❤️</div>
+        </div>
+
+        <div class="leader-row">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="leader-rank">🥉</div>
+            <div class="marble-avatar" style="width:34px; height:34px; background: conic-gradient(#00BCD4, #4CAF50, #FFEB3B);"></div>
+            <div>
+              <div style="font-size:14px; font-weight:800; color:#1F2937;">pedro.world (You)</div>
+              <div style="font-size:11px; color:#6B7280; font-weight:600;" id="leaderYourCoins">0 Kiss Coins</div>
+            </div>
+          </div>
+          <div style="font-family:'Rubik'; font-weight:800; font-size:15px; color:#FF3366;" id="leaderYourHearts">0 ❤️</div>
+        </div>
+      </div>
+
+      <!-- ================= 4. SETTINGS TAB ================= -->
+      <div id="tab-settings" class="tab-view">
+        <div class="section-header">App Preferences</div>
+
+        <div class="settings-group">
+          <div class="setting-item">
+            <span class="setting-label">Sound Effects</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingSoundToggle" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <span class="setting-label">Haptic Feedback</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingHapticsToggle" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <span class="setting-label">Golden Hearts (15% Rate)</span>
+            <label class="toggle-switch">
+              <input type="checkbox" checked disabled />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-header">World ID Verification</div>
+        <div class="settings-group">
+          <div class="setting-item">
+            <div>
+              <div class="setting-label">World ID Orb Status</div>
+              <div style="font-size:11px; color:#10B981; font-weight:700;">Verified Human</div>
+            </div>
+            <span style="color:#10B981; font-size:20px;">🛡️</span>
+          </div>
+        </div>
+
+        <button class="wallet-action-btn" id="resetDataBtn" style="color:#EF4444; border-color:#FEE2E2; background:#FEF2F2; width:100%; margin-top:10px;">
+          Reset Local High Score & Coins
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+      <div class="nav-item active" data-tab="home">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        <span>Home</span>
+      </div>
+      <div class="nav-item" data-tab="wallet">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        <span>Wallet</span>
+      </div>
+      <div class="nav-item" data-tab="leaderboard">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <span>Ranks</span>
+      </div>
+      <div class="nav-item" data-tab="settings">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span>Settings</span>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toastMessage">Kiss Coin Saved!</div>
+  </div>
+
+  <script>
+    // Audio synthesis setup
+    let audioCtx = null;
+    // Authentic recorded kiss sound ("Smooch! Mwah! 💋")
+    const KISS_SOUND_B64 = 'data:audio/wav;base64,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swJzAmYCuwJgAkECjANABIMD4gLSAlYDYQTzA0MCqAK1A4MCbAL1A9ICoQFXA2EEwQIdAcQCqQRqAs0AJgPLA0MBzf/IAFsDRATtAhwD7wP4AhoCCQI8Ak0DEwNSAWwCSAQfA4ADBwUAA8oACgI8BEMDEAF2AhYEigEBAKcCkgSmAwsC2wF/A7QEzAP8AQ0BBgKGAjkA2v9TAyMENgFiAH4CeAN5AWkAlgKcA7ECmAKiAmoBBv/k/ggDlgQmAeIA6QMeBJABm/8cAcwD4wJ+AGsBWQTeBIwBVv4HAZ0FGQOQ/usAwwQYA+//iwB/A7MDGgDS/v4BIgThAVH/ZgFdBJwCn/9BAVkEOQMzAI4AxgJHAncAKAB8AZACDwIfAtcC+QGtAEoBdwKYApwBRADIAEUClQEgAMEA1wG+AfcAEAFyAm4CzQCtAKkBrQGBAQMBcgA/AWkCbQIEAWEABgIPA2ECHQECAKoBZAMbAbj/5QE5A00CQQFgAPAA8APnA6v/XP8QA8ICWgCnAXIDDgJkAFMBBgKKAAwBDAPLAbkA8gGjAaQAAwGlAiMEQwJc/4IAdQI3ATMAZAH5ASQCdAN2Am7/RQBTAs8Al/9/AGsBXAKLAgIB5P+WAKUBKgHr/zsA2QFXA8oCdQAbAakD+QFp/2YBngPuAZX//ABJA50Byf9rAaUCBQLQAZkBNgFTAqMCDgAC/x4BOgJcAUIB9AEqAX0A2QHUAXUAxAF/AlgAzgCUA+kCHwAGALcB/QHPAK7/6wC/AzICaP7+/6IDFANhANz/XAERAvEB0AFrAL3/OQEMAXT/rADJAtcBFgBGAV8D/AHl/ib/9gEYAw0CZwBVAFMC7AHy/z4BNAIiAcYBwwHMAI0BgQGfAAQBDgKPAo0BMQGKAsYBrADsAaoBjwALAU8BnQGCArkB+/+LAOUBFwE5AJgBqAJ0ASQALAH/At8Bm/+PAE8CqQH6AIoBTgErAOH/ewBgAfkBWAHdANcBVgL7ADP/AgCUAgQCtP/n/ywBQwF/AHoAxAEdAgABOwCxADwCgQK9ABYAVwEmAtMAqP/wAT8EogJMAMgAOwLgAUYB0AHZAYkBFQIqAiQBnwB8AVkCLAGTAIsCDwIp/wcAxAJtARX/2wAIA2MBhv8QAW4CxQDg/4sAYgDyACcCYAGKAIwB0gGHABIAqQCdAJ8AmAB6APoBHwJu/1T/GgKpAr4Aov+MAIUBigEuAQUAAwCGAlUCP//BAD4EQQI8/0AAvAHlAboBqQD2/6MBBAPnAAz/HAGkAoEAOv85AeYCSwHw/uD/RALCAt0BxgAiAU8CPgGG//L/KAFbAR0BwgH+AcQA8wCRAWEAyQBBAoABCAEsAgQCewASAMABGQKB/6T/LgKEAZH/PQAoArcB+f89AQAD4wCn/40BRAJeAQ0ADf87/0UBrwOUAk4AawFIAqgAOQCPABYAMgF7A0UDOwCN/sUAmAJ9AB//LgGkApICLwIuAXMAAgF/AcD/ov8YA/sCwv5k/gcCggJu/2r+2QCjAnsBuP8CADQCggKN//P9XQC4AlIBDv/m/x4CigJqAWkA1QCYAZYBvgGBAW8BywEXAO3+FwH8AZMAywHcA4oBJv/4AfgDKwA8/n8CrwRWAcH+4f/wAVYBKv9MAE4DiANDAar/rQABAgQBDwB3AZYCygCD/n//7gFdAncBYQB9AO4BrgHD/9L/pwEjAqsBkQGwAKr/3gD2AekAGQGFAoUB7f85ARsDYgJ+AEUADwFTAbMB4QFSAbgAzAAqAUUBWAGUAXwBwgCCAJIB9gKzAff+sv/pAbwBLgGIASkBrABLAd0B1AEuAh8CswBUAN8BBAKBAH4ANQFzANz/0wAFAk0C2AEMAdkAFwHrAC4BBAF6/8P//wJbAwD/yf2hAQADxADCAD8COgEnAEUBOwKFAbwAeQGuAfn/aQBiAqUA/P6tAcgC5P+X/8ICdQNKAWQAcAFAAp0BawA7APsAAAJAAgIBKgDKAGIBcAHEAQICYAGIAMkAGwFiAC4BbQLJACr/YQD1AaEBAAEBAkECYQCG/xwBEAPFAhMAT/6vADQEEAM+/8b+KQFMAmcBzwD8AVgCEQHbAAwBJgDa/yoBWgKVAXwAPwHgAbsANwCVATECagDZ/6cBTQLHAekAIADgAEABnQDMAEQBMgKRAuYAiv8IAMEBugFr/4YAkQOsASn/AAFvApwAR/++ADQCIAGv/3wAFgKaAooBmf9b/6gB0QJwAEj/mgEyArz/bf+4AT0CsQCr/0MAPQFgALf+q/8WAlUCjAAVALMBSAGU/jf+xQBoAg0Bof+sAGkBWgAAALgATAG5ALv/pADDAbkA8/9mACkApf/n/3EAdwFGAgUBMf9k/5IAzgBpAHEAJAHEAWwBPQB4/ysAEgGYAPn/lwCPAUEBOAAYAKYAFAHiAPz/xf/UAMABFwHy/+b/+P/J/0AA4wBIAZcB2gAx/3r/jQE+AW3/OwDZAVMBDAAbAAkBtwCI/5f/sADDAdsBUwBT/1oALAF9AJf/k/+TAB4B0gApAUABigAqAFEA/gDxAAEAhQBlAYMA1f+QAGkBJwEsAEUAIwFUAQQBPACd/8n/MgCrAKUAkgAaAcQA2P/j/3sAlQAOAEMAQQE0AXgA5P+G/x0ADQHQACQAmAB3ARYB1f/I/7cA1AAsAKr/MACAAc4BtwDc/wwAIwC7/zUATgE9AQQAM/8IAEABugC0/9//egC+AGQAif+d/7MApACh/7T/vAArAbEAQQAYAO3/CAAZAJj/tP8KAd0B/QDc/0UA9wDr//z+GgA+AdEAyf/A//8ARgG2/wz/TgD9APz/Yf9ZADABqQC1/9r/sAClADsAPgBGAGoANQCM/+7/zgCaACsALQBfAHEA6v+6/3kAyAAyANr/OAC3AKAAPwAiABIAFwAXABEAbAB/AD4AZgBGAP3/TgBiABUANQCDAIIAOgAjADAAAwAAACcAIQBWAKsAbwD9/x8AmwA+AGL/vv+zAJkA+/8JAJIAowAKAL3/GwA/AOf/v/8NAIYAnwAjAMr/MAB6AO//m/8jAIIAJQC2/9z/TABWAAoA9v8wAGIANADz/xIAOQAGAPP/HgAYAAYAJgA2AAYA8f8pAC8A4f/g/x4AJQAcABsAGwAcABEADgAVAB0AGgD5/+X/DwAuAAcA7/8UADAAHQACAPv/BwALAPL/6/8HABUACAD9/wEADgAJAP7/AAADAAMAAAD//wIAAQA=';
+    let cachedKissAudio = null;
+
+    function playKissSoundEffect(volume = 1.0) {
+      try {
+        if (!cachedKissAudio) {
+          cachedKissAudio = new Audio(KISS_SOUND_B64);
+          cachedKissAudio.preload = 'auto';
+        }
+        const a = cachedKissAudio.cloneNode(true);
+        a.volume = Math.max(0, Math.min(1, volume));
+        const p = a.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {});
+        }
+      } catch (e) {}
+    }
+
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playSound(type) {
+      if (!soundEnabled) return;
+      try {
+        initAudio();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'catch') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(540, now);
+          osc.frequency.exponentialRampToValueAtTime(920, now + 0.12);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        } else if (type === 'coin') {
+          // Kiss Coin Arpeggio Chime
+          [587.33, 739.99, 880, 1174.66].forEach((freq, idx) => {
+            const cOsc = audioCtx.createOscillator();
+            const cGain = audioCtx.createGain();
+            cOsc.connect(cGain);
+            cGain.connect(audioCtx.destination);
+            cOsc.type = 'triangle';
+            cOsc.frequency.setValueAtTime(freq, now + idx * 0.05);
+            cGain.gain.setValueAtTime(0.24, now + idx * 0.05);
+            cGain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.28);
+            cOsc.start(now + idx * 0.05);
+            cOsc.stop(now + idx * 0.05 + 0.28);
+          });
+        } else if (type === 'kiss') {
+          // 1. Instant authentic human kiss sound ("Smooch! Mwah! 💋")
+          playKissSoundEffect(1.0);
+
+          // 2. Sparkling Kiss Coin reward chime immediately following the kiss
+          [1046.5, 1318.5, 1567.98, 2093.0].forEach((freq, idx) => {
+            const sOsc = audioCtx.createOscillator();
+            const sGain = audioCtx.createGain();
+            sOsc.type = 'triangle';
+            const noteStart = now + 0.10 + idx * 0.045;
+            sOsc.frequency.setValueAtTime(freq, noteStart);
+            sGain.gain.setValueAtTime(0.001, noteStart);
+            sGain.gain.linearRampToValueAtTime(0.22, noteStart + 0.01);
+            sGain.gain.exponentialRampToValueAtTime(0.001, noteStart + 0.24);
+            sOsc.connect(sGain);
+            sGain.connect(audioCtx.destination);
+            sOsc.start(noteStart);
+            sOsc.stop(noteStart + 0.25);
+          });
+        } else if (type === 'miss') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(100, now + 0.18);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+          osc.start(now);
+          osc.stop(now + 0.18);
+        } else if (type === 'start') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(400, now);
+          osc.frequency.exponentialRampToValueAtTime(750, now + 0.16);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.16);
+          osc.start(now);
+          osc.stop(now + 0.16);
+        } else if (type === 'gameover') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.linearRampToValueAtTime(80, now + 0.45);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+          osc.start(now);
+          osc.stop(now + 0.45);
+        } else if (type === 'burst') {
+          // Sharp balloon burst noise pop + sub-bass shockwave
+          try {
+            const bufferSize = Math.floor(audioCtx.sampleRate * 0.1);
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+              output[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.018));
+            }
+            const whiteNoise = audioCtx.createBufferSource();
+            whiteNoise.buffer = noiseBuffer;
+
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(1500, now);
+            filter.Q.setValueAtTime(1.4, now);
+
+            const noiseGain = audioCtx.createGain();
+            noiseGain.gain.setValueAtTime(0.75, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+
+            whiteNoise.connect(filter);
+            filter.connect(noiseGain);
+            noiseGain.connect(audioCtx.destination);
+            whiteNoise.start(now);
+          } catch (err) {}
+
+          // Bass thump
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(190, now);
+          osc.frequency.exponentialRampToValueAtTime(30, now + 0.32);
+          gain.gain.setValueAtTime(0.6, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.32);
+          osc.start(now);
+          osc.stop(now + 0.32);
+        }
+      } catch (e) {}
+    }
+
+    // UI Toast
+    function showToast(msg) {
+      const t = document.getElementById('toastMessage');
+      t.innerText = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    // Navigation Tabs Logic
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
+
+        item.classList.add('active');
+        const tab = item.dataset.tab;
+        document.getElementById(`tab-${tab}`).classList.add('active');
+
+        if (tab === 'wallet') {
+          updateWalletUI();
+        }
+      });
+    });
+
+    // Game Core State
+    let gameState = 'idle'; // 'idle' | 'playing' | 'gameover'
+    let gameOverReason = 'miss'; // 'miss' | 'burst'
+    let balloonBursted = false;
+    let screenShake = 0;
+    let hearts = 0;
+    let kisses = 0;
+    let kissCoins = parseInt(localStorage.getItem('kiss_coins_total') || '5', 10);
+    let sessionCoins = 0;
+    let lives = 3;
+    let invulnerableUntil = 0;
+    let highScore = parseInt(localStorage.getItem('kiss_coin_high_score') || '0', 10);
+    let bannerMessage = localStorage.getItem('kiss_coin_banner_message') || 'Kiss the sky! 💋';
+    let bannerAuthor = localStorage.getItem('kiss_coin_banner_author') || 'Top Pilot';
+    let bannerIsSponsor = localStorage.getItem('kiss_coin_banner_sponsor') === 'true';
+    let vipShieldUntil = parseInt(localStorage.getItem('kiss_coin_vip_shield_until') || '0', 10);
+    let pendingChampionMessage = localStorage.getItem('kiss_coin_pending_champ_msg') || '';
+    let isNewRecord = false;
+
+    function updateBannerUI() {
+      const now = Date.now();
+      const isShieldActive = bannerIsSponsor && vipShieldUntil > now;
+      const prefix = isShieldActive ? '💎 VIP (1-Hr Shield)' : (bannerIsSponsor ? '💎 VIP' : '👑');
+      const icon = bannerIsSponsor ? '💎' : '👑';
+      const title = isShieldActive ? 'VIP 1-Hour Shield Banner' : (bannerIsSponsor ? 'VIP 1 WLD Sponsor Banner' : 'Sky Champion Banner');
+      const iconEl = document.getElementById('startBannerIcon');
+      const titleEl = document.getElementById('startBannerTitle');
+      const prevEl = document.getElementById('startBannerPreview');
+      if (iconEl) iconEl.innerText = icon;
+      if (titleEl) {
+        titleEl.innerText = title;
+        titleEl.style.color = '#B45309';
+      }
+      if (prevEl) {
+        if (isShieldActive) {
+          const remMins = Math.max(1, Math.ceil((vipShieldUntil - now) / 60000));
+          prevEl.innerHTML = `"${bannerMessage}" <span style="color:#D97706; font-size:10px; font-weight:800; margin-left:4px;">(🛡️ ${remMins}m left)</span>`;
+        } else {
+          prevEl.innerText = `"${bannerMessage}"`;
+        }
+        prevEl.style.color = '#0F172A';
+      }
+      const sumText = document.getElementById('currentBannerTextSummary');
+      if (sumText) {
+        sumText.innerText = `${prefix}: "${bannerMessage}"`;
+      }
+      const recText = document.getElementById('recordToBeatText');
+      if (recText) {
+        recText.innerText = `${highScore} pts record`;
+      }
+    }
+
+    function updateHighScoreUI() {
+      const hudBestStat = document.getElementById('hudBestStat');
+      const hudBestScore = document.getElementById('hudBestScore');
+      if (hudBestStat && hudBestScore) {
+        if (highScore > 0) {
+          hudBestStat.style.display = 'flex';
+          hudBestScore.innerText = highScore;
+        } else {
+          hudBestStat.style.display = 'none';
+        }
+      }
+    }
+
+    updateHighScoreUI();
+    document.getElementById('hudKissCoins').innerText = kissCoins;
+    updateBannerUI();
+
+    function updateWalletUI() {
+      document.getElementById('walletTotalCoins').innerText = kissCoins;
+      document.getElementById('leaderYourCoins').innerText = `${kissCoins} Kiss Coins`;
+      document.getElementById('leaderYourHearts').innerText = `${highScore} ❤️`;
+    }
+
+    // Canvas & Game Loop
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = 0;
+    let height = 0;
+
+    // Catcher state (Hot Air Balloon in 2D Flight)
+    let catcherX = 180;
+    let catcherTargetX = 180;
+    let catcherVx = 0;
+    let catcherY = 320;
+    let catcherTargetY = 320;
+    let catcherVy = 0;
+    const catcherWidth = 74;
+    const catcherHeight = 26;
+    const keysPressed = new Set();
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      width = rect.width;
+      height = rect.height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+      if (height > 0) {
+        const midY = Math.round(height * 0.52);
+        catcherY = midY;
+        catcherTargetY = midY;
+        catcherX = width / 2;
+        catcherTargetX = width / 2;
+      }
+    }
+    window.addEventListener('resize', resize);
+    setTimeout(resize, 50);
+
+    let fallingHearts = [];
+    let particles = [];
+    let floatingTexts = [];
+    let lastSpawn = 0;
+    let spawnInterval = 1100;
+    let nextId = 1;
+    let flightStartTime = 0;
+    let flightDuration = 0;
+    let flightTopSpeed = 1.0;
+
+    // Classic Normal Heart drawing helper
+    function drawHeart(c, x, y, size, color, isGolden, wobble = 0) {
+      c.save();
+      c.translate(x, y);
+
+      // Gentle natural flutter angle
+      c.rotate(Math.sin(wobble) * 0.12);
+
+      // Soft cute aura
+      if (isGolden) {
+        c.shadowColor = 'rgba(245, 158, 11, 0.75)';
+        c.shadowBlur = 15;
+      } else {
+        c.shadowColor = 'rgba(255, 46, 99, 0.5)';
+        c.shadowBlur = 12;
+      }
+
+      // Classic Normal Heart Scale Factor (Height : Width ~ 1.15 : 1.0)
+      const s = size * 0.85;
+
+      // Vertical Gradient
+      const grad = c.createLinearGradient(0, -s * 1.12, 0, s * 1.15);
+      if (isGolden) {
+        // Golden Life Heart: Sunny cream to amber gold
+        grad.addColorStop(0, '#FEF08A');
+        grad.addColorStop(0.3, '#FBBF24');
+        grad.addColorStop(0.75, '#F59E0B');
+        grad.addColorStop(1, '#D97706');
+      } else {
+        // Red Score Heart: Bright coral to rich ruby crimson
+        grad.addColorStop(0, '#FF5378');
+        grad.addColorStop(0.35, '#FF2E63');
+        grad.addColorStop(0.75, '#E11D48');
+        grad.addColorStop(1, '#9F1239');
+      }
+
+      c.fillStyle = grad;
+      c.beginPath();
+
+      // Classic Normal Heart Path (tall, elegant, iconic normal heart)
+      // 1. Bottom point
+      c.moveTo(0, s * 1.15);
+      // 2. Left flank curve up to left crest
+      c.bezierCurveTo(-s * 0.55, s * 0.48, -s * 1.0, s * 0.08, -s * 1.0, -s * 0.44);
+      // 3. Left lobe top arch
+      c.bezierCurveTo(-s * 1.0, -s * 0.82, -s * 0.76, -s * 1.12, -s * 0.44, -s * 1.12);
+      // 4. Left lobe down into center cleft
+      c.bezierCurveTo(-s * 0.22, -s * 1.12, -s * 0.08, -s * 1.0, 0, -s * 0.85);
+      // 5. Right lobe up from center cleft
+      c.bezierCurveTo(s * 0.08, -s * 1.0, s * 0.22, -s * 1.12, s * 0.44, -s * 1.12);
+      // 6. Right lobe top arch
+      c.bezierCurveTo(s * 0.76, -s * 1.12, s * 1.0, -s * 0.82, s * 1.0, -s * 0.44);
+      // 7. Right flank down to bottom point
+      c.bezierCurveTo(s * 1.0, s * 0.08, s * 0.55, s * 0.48, 0, s * 1.15);
+      c.closePath();
+      c.fill();
+
+      // Clear shadow for crisp gloss highlights
+      c.shadowBlur = 0;
+
+      // Soft Curved Highlight on Left Lobe
+      c.fillStyle = 'rgba(255, 255, 255, 0.65)';
+      c.beginPath();
+      c.ellipse(-s * 0.46, -s * 0.65, s * 0.22, s * 0.11, -0.45, 0, Math.PI * 2);
+      c.fill();
+
+      // Subtle Gleam Dot on Right Lobe
+      c.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      c.beginPath();
+      c.arc(s * 0.48, -s * 0.7, Math.max(1.4, size * 0.08), 0, Math.PI * 2);
+      c.fill();
+
+      c.restore();
+    }
+
+    // Kiss drawing helper
+    function drawKiss(c, x, y, size, wobble) {
+      c.save();
+      c.translate(x, y);
+      c.rotate(Math.sin(wobble) * 0.28);
+      c.shadowColor = 'rgba(255, 46, 99, 0.65)';
+      c.shadowBlur = 14;
+      c.font = `${Math.floor(size * 1.55)}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillText('💋', 0, 0);
+      c.restore();
+    }
+
+    // Sharp Sky Dart drawing helper
+    function drawHazardDart(c, x, y, size, wobble) {
+      c.save();
+      c.translate(x, y);
+      c.rotate(Math.sin(wobble) * 0.14);
+
+      // Warning hazard aura
+      c.shadowColor = 'rgba(239, 68, 68, 0.85)';
+      c.shadowBlur = 14;
+
+      // 1. Aerodynamic Swept Tail Fins (Top of dart)
+      c.fillStyle = '#DC2626';
+      c.beginPath();
+      c.moveTo(-9, -18);
+      c.lineTo(0, -6);
+      c.lineTo(9, -18);
+      c.lineTo(5, -12);
+      c.lineTo(0, -3);
+      c.lineTo(-5, -12);
+      c.closePath();
+      c.fill();
+
+      c.fillStyle = '#F87171';
+      c.beginPath();
+      c.moveTo(-7, -16);
+      c.lineTo(0, -6);
+      c.lineTo(0, -3);
+      c.lineTo(-3, -11);
+      c.closePath();
+      c.fill();
+
+      // 2. Heavy Tungsten Dart Barrel (Middle)
+      const bodyGrad = c.createLinearGradient(-3.5, -6, 3.5, 4);
+      bodyGrad.addColorStop(0, '#1E293B');
+      bodyGrad.addColorStop(0.5, '#475569');
+      bodyGrad.addColorStop(1, '#0F172A');
+      c.fillStyle = bodyGrad;
+      c.beginPath();
+      c.roundRect(-4, -6, 8, 12, [1.5]);
+      c.fill();
+
+      // Hazard Caution Ring (Vibrant yellow & crimson warning stripes)
+      c.fillStyle = '#FBBF24';
+      c.fillRect(-4, -3, 8, 2.5);
+      c.fillStyle = '#EF4444';
+      c.fillRect(-4, 1.5, 8, 2.5);
+
+      // 3. Piercing Side Barbs
+      c.fillStyle = '#334155';
+      c.beginPath();
+      c.moveTo(-3.5, 6);
+      c.lineTo(-8, 1.5);
+      c.lineTo(-3.5, 3.5);
+      c.closePath();
+      c.fill();
+      c.beginPath();
+      c.moveTo(3.5, 6);
+      c.lineTo(8, 1.5);
+      c.lineTo(3.5, 3.5);
+      c.closePath();
+      c.fill();
+
+      // 4. Ultra-Sharp Needle Point (Points directly down towards the balloon)
+      const needleGrad = c.createLinearGradient(0, 6, 0, 20);
+      needleGrad.addColorStop(0, '#94A3B8');
+      needleGrad.addColorStop(0.5, '#E2E8F0');
+      needleGrad.addColorStop(1, '#FFFFFF');
+      c.fillStyle = needleGrad;
+      c.beginPath();
+      c.moveTo(-3.5, 6);
+      c.lineTo(3.5, 6);
+      c.lineTo(0, 20);
+      c.closePath();
+      c.fill();
+
+      // Sharp glint on the needle apex
+      c.fillStyle = '#FFFFFF';
+      c.beginPath();
+      c.arc(0, 19.5, 1.6, 0, Math.PI * 2);
+      c.fill();
+
+      c.restore();
+    }
+
+    // Hot Air Balloon Catcher with Pilot and Fluttering Sky Banner!
+    function drawHotAirBalloon(c, x, y, w, h, currentTime, author, message, vx, vy = 0, isSponsor = false, isBursted = false) {
+      c.save();
+      // Atmospheric buoyant bobbing
+      const hoverY = isBursted ? 0 : Math.sin(currentTime * 0.003) * 6;
+      c.translate(x, y + hoverY);
+
+      // Dynamic tilt based on horizontal velocity and subtle floating breath
+      const tilt = Math.max(-0.16, Math.min(0.16, vx * 0.005)) + (isBursted ? 0.08 : Math.sin(currentTime * 0.003) * 0.02);
+      c.rotate(tilt);
+
+      // 1. Hot Air Balloon Envelope (Above Basket) - only drawn if NOT bursted!
+      const balloonCenterY = -76;
+      const balloonRadiusX = 33;
+      const balloonRadiusY = 38;
+
+      if (!isBursted) {
+        // Drop shadow for the balloon
+        c.save();
+        c.shadowColor = 'rgba(255, 46, 99, 0.25)';
+        c.shadowBlur = 16;
+
+        // Balloon Outline / Base Shape (pear-drop)
+        c.beginPath();
+        c.moveTo(0, balloonCenterY - balloonRadiusY);
+        c.bezierCurveTo(
+          balloonRadiusX * 1.25, balloonCenterY - balloonRadiusY * 0.7,
+          balloonRadiusX * 1.1, balloonCenterY + balloonRadiusY * 0.4,
+          14, -38
+        );
+        c.lineTo(-14, -38);
+        c.bezierCurveTo(
+          -balloonRadiusX * 1.1, balloonCenterY + balloonRadiusY * 0.4,
+          -balloonRadiusX * 1.25, balloonCenterY - balloonRadiusY * 0.7,
+          0, balloonCenterY - balloonRadiusY
+        );
+        c.closePath();
+
+        // Clip balloon to draw stylish vertical candy stripes
+        c.save();
+        c.clip();
+
+        const bgGrad = c.createLinearGradient(-balloonRadiusX, 0, balloonRadiusX, 0);
+        bgGrad.addColorStop(0, '#FF2E63');
+        bgGrad.addColorStop(0.25, '#FFD54F');
+        bgGrad.addColorStop(0.5, '#FFF0F5');
+        bgGrad.addColorStop(0.75, '#FFD54F');
+        bgGrad.addColorStop(1, '#FF2E63');
+        c.fillStyle = bgGrad;
+        c.fill();
+
+        // Vertical meridian seam lines running smoothly from top apex to bottom collar (No closed loops!)
+        c.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+        c.lineWidth = 1.6;
+        [-24, -12, 0, 12, 24].forEach((midX) => {
+          const bottomX = midX * 0.42;
+          c.beginPath();
+          c.moveTo(0, balloonCenterY - balloonRadiusY);
+          c.bezierCurveTo(
+            midX * 1.18, balloonCenterY - balloonRadiusY * 0.45,
+            midX * 1.08, balloonCenterY + balloonRadiusY * 0.35,
+            bottomX, -38
+          );
+          c.stroke();
+        });
+
+        // Center Balloon Emblem: Crisp vector Kiss Lips (not blurry emoji)
+        c.save();
+        c.translate(0, balloonCenterY - 2);
+        c.shadowColor = 'rgba(225, 29, 72, 0.45)';
+        c.shadowBlur = 8;
+        // Upper lip
+        c.fillStyle = '#E11D48';
+        c.beginPath();
+        c.moveTo(-10, 0);
+        c.bezierCurveTo(-6, -5.5, -2, -4.5, 0, -2.5);
+        c.bezierCurveTo(2, -4.5, 6, -5.5, 10, 0);
+        c.bezierCurveTo(6, 1.2, 2, -1, 0, 0);
+        c.bezierCurveTo(-2, -1, -6, 1.2, -10, 0);
+        c.fill();
+        // Lower lip
+        c.fillStyle = '#FF2E63';
+        c.beginPath();
+        c.moveTo(-9, 1);
+        c.bezierCurveTo(-5, 7.5, 5, 7.5, 9, 1);
+        c.bezierCurveTo(5, 2.2, -5, 2.2, -9, 1);
+        c.fill();
+        // Specular highlight on lip
+        c.fillStyle = 'rgba(255, 255, 255, 0.75)';
+        c.beginPath();
+        c.arc(-2.5, 2.5, 1, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+
+        c.restore(); // end clip
+
+        c.strokeStyle = '#FFFFFF';
+        c.lineWidth = 2.5;
+        c.stroke();
+        c.restore(); // end shadow
+
+        // Scalloped skirt at bottom of envelope
+        c.fillStyle = '#FF2E63';
+        c.beginPath();
+        c.roundRect(-15, -40, 30, 5, [2, 2, 4, 4]);
+        c.fill();
+
+        // 2. Rigging Suspension Cables
+        c.strokeStyle = 'rgba(120, 53, 15, 0.7)';
+        c.lineWidth = 1.4;
+        [
+          [-w / 2 + 8, -h / 2, -12, -35],
+          [-w / 6, -h / 2, -5, -35],
+          [w / 6, -h / 2, 5, -35],
+          [w / 2 - 8, -h / 2, 12, -35],
+        ].forEach(([x1, y1, x2, y2]) => {
+          c.beginPath();
+          c.moveTo(x1, y1);
+          c.lineTo(x2, y2);
+          c.stroke();
+        });
+      } else {
+        // Bursted balloon: severed smoky cable stubs
+        c.strokeStyle = 'rgba(75, 85, 99, 0.8)';
+        c.lineWidth = 1.4;
+        [
+          [-w / 2 + 8, -h / 2, -10, -h / 2 - 12],
+          [-w / 6, -h / 2, -4, -h / 2 - 14],
+          [w / 6, -h / 2, 4, -h / 2 - 14],
+          [w / 2 - 8, -h / 2, 10, -h / 2 - 12],
+        ].forEach(([x1, y1, x2, y2]) => {
+          c.beginPath();
+          c.moveTo(x1, y1);
+          c.lineTo(x2, y2);
+          c.stroke();
+        });
+      }
+
+      // 3. Burner & Animated Flame
+      c.fillStyle = '#374151';
+      c.fillRect(-8, -30, 16, 3);
+
+      if (!isBursted) {
+        const climbBoost = Math.max(0, -vy * 0.045);
+        const flameHeight = 7 + Math.sin(currentTime * 0.02) * 2.5 + Math.min(14, climbBoost);
+        const flameWidth = 4 + Math.min(3, climbBoost * 0.25);
+        const flameGrad = c.createRadialGradient(0, -29, 1, 0, -29 - flameHeight / 2, flameHeight);
+        flameGrad.addColorStop(0, '#FFFFFF');
+        flameGrad.addColorStop(0.3, '#FBBF24');
+        flameGrad.addColorStop(0.8, '#EF4444');
+        flameGrad.addColorStop(1, 'transparent');
+        c.fillStyle = flameGrad;
+        c.beginPath();
+        c.ellipse(0, -29 - flameHeight / 2, flameWidth, flameHeight, 0, 0, Math.PI * 2);
+        c.fill();
+      } else {
+        // Smoldering extinguished burner smoke puff
+        c.fillStyle = 'rgba(156, 163, 175, 0.6)';
+        c.beginPath();
+        c.arc(0, -32, 4, 0, Math.PI * 2);
+        c.arc(-2, -36, 5, 0, Math.PI * 2);
+        c.fill();
+      }
+
+      // 4. Pilot in the Basket!
+      c.save();
+      c.translate(0, -h / 2 - 2);
+      c.fillStyle = '#FFDFC4';
+      c.beginPath();
+      c.arc(0, -5, 8.5, 0, Math.PI * 2);
+      c.fill();
+      // Aviator goggles
+      c.fillStyle = '#78350F';
+      c.beginPath();
+      c.roundRect(-7.5, -9.5, 15, 5.5, 2.5);
+      c.fill();
+      c.fillStyle = '#60A5FA';
+      c.beginPath();
+      c.arc(-3.5, -6.8, 2.2, 0, Math.PI * 2);
+      c.arc(3.5, -6.8, 2.2, 0, Math.PI * 2);
+      c.fill();
+
+      if (isBursted) {
+        // Wide shocked eyes
+        c.fillStyle = '#FFFFFF';
+        c.beginPath();
+        c.arc(-3, -2.5, 2.5, 0, Math.PI * 2);
+        c.arc(3, -2.5, 2.5, 0, Math.PI * 2);
+        c.fill();
+        c.fillStyle = '#1E293B';
+        c.beginPath();
+        c.arc(-3, -2.5, 1.2, 0, Math.PI * 2);
+        c.arc(3, -2.5, 1.2, 0, Math.PI * 2);
+        c.fill();
+        // Surprised open mouth 'O'
+        c.fillStyle = '#78350F';
+        c.beginPath();
+        c.arc(0, 1.5, 2, 0, Math.PI * 2);
+        c.fill();
+      } else {
+        // Smile
+        c.strokeStyle = '#78350F';
+        c.lineWidth = 1.2;
+        c.beginPath();
+        c.arc(0, -2.5, 2.5, 0.2, Math.PI - 0.2);
+        c.stroke();
+      }
+
+      // Hands on rim
+      c.fillStyle = '#FFDFC4';
+      c.beginPath();
+      c.arc(-14, 3, 3, 0, Math.PI * 2);
+      c.arc(14, 3, 3, 0, Math.PI * 2);
+      c.fill();
+      c.restore();
+
+      // 5. Wicker Basket (Catcher Catch Zone)
+      c.save();
+      c.shadowColor = 'rgba(0, 0, 0, 0.15)';
+      c.shadowBlur = 8;
+      c.shadowOffsetY = 3;
+
+      const basketGrad = c.createLinearGradient(0, -h / 2, 0, h / 2);
+      basketGrad.addColorStop(0, '#D97706');
+      basketGrad.addColorStop(0.5, '#B45309');
+      basketGrad.addColorStop(1, '#92400E');
+
+      c.fillStyle = basketGrad;
+      c.beginPath();
+      c.roundRect(-w / 2, -h / 2, w, h, [4, 4, 10, 10]);
+      c.fill();
+
+      // Wicker weave pattern
+      c.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+      c.lineWidth = 1.2;
+      for (let bx = -w / 2 + 7; bx < w / 2; bx += 7) {
+        c.beginPath();
+        c.moveTo(bx, -h / 2);
+        c.lineTo(bx, h / 2);
+        c.stroke();
+      }
+      for (let by = -h / 2 + 5; by < h / 2; by += 5) {
+        c.beginPath();
+        c.moveTo(-w / 2, by);
+        c.lineTo(w / 2, by);
+        c.stroke();
+      }
+
+      // Basket top leather rim
+      c.fillStyle = '#78350F';
+      c.beginPath();
+      c.roundRect(-w / 2 - 1.5, -h / 2 - 2, w + 3, 4.5, [2]);
+      c.fill();
+
+      c.restore();
+
+      // 6. Fluttering Sky Banner (Supports longer messages and VIP 1 WLD Sponsor styling!)
+      const prefix = isSponsor ? '💎' : '👑';
+      const bannerText = `${prefix} "${message}"`;
+      c.font = 'bold 10px "Plus Jakarta Sans", sans-serif';
+      const textMetrics = c.measureText(bannerText);
+      const bannerW = Math.min(235, Math.max(120, textMetrics.width + 18));
+      const bannerH = 20;
+
+      const trailRight = x < 185;
+      const bannerStartX = trailRight ? 28 : -28;
+      const bannerEndX = trailRight ? bannerStartX + bannerW : bannerStartX - bannerW;
+      const bannerY = balloonCenterY - 10;
+
+      // Tow lines
+      c.strokeStyle = isSponsor ? 'rgba(217, 119, 6, 0.9)' : 'rgba(180, 83, 9, 0.7)';
+      c.lineWidth = 1.3;
+      c.beginPath();
+      c.moveTo(trailRight ? 22 : -22, balloonCenterY - 6);
+      c.lineTo(bannerStartX, bannerY - 3);
+      c.moveTo(trailRight ? 20 : -20, balloonCenterY + 6);
+      c.lineTo(bannerStartX, bannerY + 11);
+      c.stroke();
+
+      // Cloth ribbon
+      c.save();
+      c.shadowColor = isSponsor ? 'rgba(245, 158, 11, 0.35)' : 'rgba(0, 0, 0, 0.12)';
+      c.shadowBlur = isSponsor ? 10 : 6;
+      c.shadowOffsetY = 2;
+
+      const wave = Math.sin(currentTime * 0.005) * 2.5;
+      const leftX = Math.min(bannerStartX, bannerEndX);
+      const rightX = Math.max(bannerStartX, bannerEndX);
+
+      if (isSponsor) {
+        const ribbonGrad = c.createLinearGradient(leftX, bannerY, rightX, bannerY + bannerH);
+        ribbonGrad.addColorStop(0, '#FEF3C7');
+        ribbonGrad.addColorStop(0.5, '#FDE68A');
+        ribbonGrad.addColorStop(1, '#FEF3C7');
+        c.fillStyle = ribbonGrad;
+      } else {
+        c.fillStyle = '#FFFDF5';
+      }
+
+      c.beginPath();
+      c.moveTo(leftX, bannerY + wave);
+      c.lineTo(rightX, bannerY - wave);
+      if (trailRight) {
+        c.lineTo(rightX - 7, bannerY + bannerH / 2 - wave);
+        c.lineTo(rightX, bannerY + bannerH - wave);
+      } else {
+        c.lineTo(rightX, bannerY + bannerH - wave);
+      }
+      c.lineTo(leftX, bannerY + bannerH + wave);
+      if (!trailRight) {
+        c.lineTo(leftX + 7, bannerY + bannerH / 2 + wave);
+      }
+      c.closePath();
+      c.fill();
+
+      // Gold border
+      c.strokeStyle = isSponsor ? '#D97706' : '#F59E0B';
+      c.lineWidth = isSponsor ? 1.8 : 1.4;
+      c.stroke();
+
+      // Banner text (with smooth marquee scroll if message is long!)
+      c.save();
+      c.beginPath();
+      c.rect(leftX + (trailRight ? 4 : 8), bannerY - 4, bannerW - 12, bannerH + 8);
+      c.clip();
+
+      c.fillStyle = isSponsor ? '#78350F' : '#9D174D';
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      const textCenterX = (leftX + rightX) / 2 + (trailRight ? -3 : 3);
+      const maxTextW = bannerW - 16;
+      if (textMetrics.width > maxTextW) {
+        const overflow = textMetrics.width - maxTextW;
+        const scrollPhase = (Math.sin(currentTime * 0.0018) * 0.5 + 0.5);
+        const scrollX = textCenterX - (scrollPhase - 0.5) * overflow;
+        c.fillText(bannerText, scrollX, bannerY + bannerH / 2);
+      } else {
+        c.fillText(bannerText, textCenterX, bannerY + bannerH / 2);
+      }
+      c.restore();
+
+      c.restore(); // end ribbon
+
+      c.restore(); // end balloon
+    }
+
+    // Update HUD
+    function updateHUD() {
+      document.getElementById('hudHearts').innerText = hearts;
+      document.getElementById('hudKisses').innerText = kisses;
+      document.getElementById('hudKissCoins').innerText = kissCoins;
+
+      document.getElementById('life1').className = `life-heart ${lives < 1 ? 'lost' : ''}`;
+      document.getElementById('life2').className = `life-heart ${lives < 2 ? 'lost' : ''}`;
+      document.getElementById('life3').className = `life-heart ${lives < 3 ? 'lost' : ''}`;
+    }
+
+    // Start Game
+    function startGame() {
+      initAudio();
+      hearts = 0;
+      kisses = 0;
+      sessionCoins = 0;
+      lives = 3;
+      invulnerableUntil = 0;
+      gameOverReason = 'miss';
+      balloonBursted = false;
+      screenShake = 0;
+      flightStartTime = performance.now();
+      flightDuration = 0;
+      flightTopSpeed = 1.0;
+      fallingHearts = [];
+      particles = [];
+      floatingTexts = [];
+      lastSpawn = performance.now();
+      spawnInterval = 1100;
+      gameState = 'playing';
+      isNewRecord = false;
+      if (height > 0) {
+        catcherTargetY = Math.round(height * 0.52);
+        catcherTargetX = width / 2;
+      }
+
+      document.getElementById('startOverlay').classList.add('hidden');
+      document.getElementById('gameOverOverlay').classList.add('hidden');
+      document.getElementById('newRecordBannerBox').style.display = 'none';
+      document.getElementById('bannerSavedFeedback').style.display = 'none';
+      const gpStats = document.getElementById('hudGameplayStats');
+      if (gpStats) gpStats.style.display = 'flex';
+      updateHUD();
+      playSound('start');
+    }
+
+    // End Game
+    function gameOver(reason = 'miss') {
+      gameOverReason = reason;
+      gameState = 'gameover';
+      if (reason !== 'burst') {
+        playSound('gameover');
+      }
+
+      // Hide gameplay stats from HUD so on game over, only Kiss Coins & Best Score show on top!
+      const gpStats = document.getElementById('hudGameplayStats');
+      if (gpStats) gpStats.style.display = 'none';
+
+      // Ensure Kiss Coins and Best Score are shown on top
+      document.getElementById('hudKissCoins').innerText = kissCoins;
+      const hudBestStat = document.getElementById('hudBestStat');
+      const hudBestScore = document.getElementById('hudBestScore');
+      if (hudBestStat) {
+        hudBestStat.style.display = 'flex';
+        if (hudBestScore) hudBestScore.innerText = highScore;
+      }
+
+      flightDuration = Math.max(1, Math.round((performance.now() - (flightStartTime || performance.now())) / 1000));
+      flightTopSpeed = 1.0 + Math.min(1.8, flightDuration * 0.028);
+
+      const mins = Math.floor(flightDuration / 60);
+      const secs = flightDuration % 60;
+      const timeStr = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      const fTimeEl = document.getElementById('resFlightTime');
+      if (fTimeEl) fTimeEl.innerText = timeStr;
+      const speedEl = document.getElementById('resPeakSpeed');
+      if (speedEl) {
+        speedEl.innerText = `${flightTopSpeed.toFixed(1)}x`;
+        speedEl.style.color = flightTopSpeed > 1.8 ? '#E11D48' : '#D97706';
+      }
+
+      const flightScore = hearts + kisses * 2;
+      const prevRecord = highScore;
+      const isRecord = flightScore > highScore;
+
+      if (isRecord) {
+        highScore = flightScore;
+        localStorage.setItem('kiss_coin_high_score', highScore.toString());
+        updateHighScoreUI();
+        isNewRecord = true;
+      } else {
+        isNewRecord = false;
+      }
+
+      // Save Coins
+      localStorage.setItem('kiss_coins_total', kissCoins.toString());
+
+      const icon = isRecord ? '👑' : '🎈';
+      const title = isRecord ? 'New Record!' : 'Game Over';
+      const iconEl = document.getElementById('gameOverIcon');
+      if (iconEl) iconEl.innerText = icon;
+      const titleEl = document.getElementById('gameOverTitle');
+      if (titleEl) titleEl.innerText = title;
+
+      const scoreEl = document.getElementById('resFlightScore');
+      if (scoreEl) scoreEl.innerText = `${flightScore}`;
+      const coinsEl = document.getElementById('resCoins');
+      if (coinsEl) coinsEl.innerText = `+${sessionCoins}`;
+      const bestEl = document.getElementById('resBest');
+      if (bestEl) bestEl.innerText = highScore;
+
+      const recordBox = document.getElementById('newRecordBannerBox');
+      const notRecordBox = document.getElementById('notRecordBannerBox');
+
+      if (isRecord) {
+        if (recordBox) {
+          recordBox.style.display = 'block';
+          const textInput = document.getElementById('bannerTextInput');
+          if (textInput) {
+            textInput.value = '';
+          }
+          const feedbackEl = document.getElementById('bannerSavedFeedback');
+          if (feedbackEl) feedbackEl.style.display = 'none';
+        }
+        if (notRecordBox) notRecordBox.style.display = 'none';
+      } else {
+        if (recordBox) recordBox.style.display = 'none';
+        if (notRecordBox) {
+          notRecordBox.style.display = 'flex';
+          const sumText = document.getElementById('currentBannerTextSummary');
+          if (sumText) {
+            sumText.innerText = `Banner: "${bannerMessage}"`;
+          }
+        }
+      }
+
+      document.getElementById('gameOverOverlay').classList.remove('hidden');
+
+      // Add to recent activity if earned
+      if (sessionCoins > 0) {
+        const list = document.getElementById('activityList');
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = `
+          <div class="history-left">
+            <div class="history-icon">🎈</div>
+            <div>
+              <div class="history-title">Balloon Flight Reward</div>
+              <div class="history-date">Just now</div>
+            </div>
+          </div>
+          <div class="history-amt">+${sessionCoins} KISS</div>
+        `;
+        list.insertBefore(item, list.firstChild);
+      }
+    }
+
+    // Main animation loop
+    let lastTime = performance.now();
+    function loop(currentTime) {
+      requestAnimationFrame(loop);
+      const dt = Math.min((currentTime - lastTime) / 1000, 0.1);
+      lastTime = currentTime;
+
+      if (!width || !height) return;
+
+      ctx.clearRect(0, 0, width, height);
+
+      ctx.save();
+      if (screenShake > 0) {
+        const sx = (Math.random() * 2 - 1) * screenShake;
+        const sy = (Math.random() * 2 - 1) * screenShake;
+        ctx.translate(sx, sy);
+        screenShake = Math.max(0, screenShake - dt * 45);
+      }
+
+      // Background decorative guides
+      ctx.save();
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+      bgGrad.addColorStop(0, '#FFF6F8');
+      bgGrad.addColorStop(1, '#FFE9EF');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.strokeStyle = 'rgba(255, 51, 102, 0.07)';
+      ctx.lineWidth = 1;
+      for (let y = 30; y < height; y += 38) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Keyboard input support
+      const keySpeed = 360;
+      if (keysPressed.has('arrowleft') || keysPressed.has('keya') || keysPressed.has('a')) {
+        catcherTargetX -= keySpeed * dt;
+      }
+      if (keysPressed.has('arrowright') || keysPressed.has('keyd') || keysPressed.has('d')) {
+        catcherTargetX += keySpeed * dt;
+      }
+      if (keysPressed.has('arrowup') || keysPressed.has('keyw') || keysPressed.has('w')) {
+        catcherTargetY -= keySpeed * dt;
+      }
+      if (keysPressed.has('arrowdown') || keysPressed.has('keys') || keysPressed.has('s')) {
+        catcherTargetY += keySpeed * dt;
+      }
+
+      const halfW = catcherWidth / 2;
+      const minX = halfW + 6;
+      const maxX = width - halfW - 6;
+      const minY = 95; // envelope dome reaches near top
+      const maxY = height - 26; // basket sits near bottom
+
+      catcherTargetX = Math.max(minX, Math.min(maxX, catcherTargetX));
+      catcherTargetY = Math.max(minY, Math.min(maxY, catcherTargetY));
+
+      const prevX = catcherX;
+      const prevY = catcherY;
+      catcherX += (catcherTargetX - catcherX) * 0.25;
+      catcherY += (catcherTargetY - catcherY) * 0.25;
+      catcherX = Math.max(minX, Math.min(maxX, catcherX));
+      catcherY = Math.max(minY, Math.min(maxY, catcherY));
+      catcherVx = (catcherX - prevX) / Math.max(dt, 0.016);
+      catcherVy = (catcherY - prevY) / Math.max(dt, 0.016);
+
+      const isInvulnerable = currentTime < invulnerableUntil;
+      if (isInvulnerable) {
+        ctx.globalAlpha = 0.35 + 0.55 * Math.abs(Math.sin(currentTime * 0.018));
+      }
+      drawHotAirBalloon(ctx, catcherX, catcherY, catcherWidth, catcherHeight, currentTime, bannerAuthor, bannerMessage, catcherVx, catcherVy, bannerIsSponsor, balloonBursted);
+      if (isInvulnerable) {
+        ctx.globalAlpha = 1.0;
+      }
+
+      function triggerBalloonBurst(hitX, hitY) {
+        balloonBursted = true;
+        screenShake = 18;
+        playSound('burst');
+
+        const envY = catcherY - 76;
+
+        // 1. Tearing rubber balloon fragments flying in all directions
+        const shredColors = ['#FF2E63', '#FFD54F', '#FFF0F5', '#E11D48', '#FF69B4', '#F43F5E'];
+        for (let p = 0; p < 36; p++) {
+          const angle = Math.random() * Math.PI * 2;
+          const spd = 120 + Math.random() * 260;
+          particles.push({
+            x: catcherX + (Math.random() - 0.5) * 30,
+            y: envY + (Math.random() - 0.5) * 40,
+            vx: Math.cos(angle) * spd,
+            vy: Math.sin(angle) * spd - 60,
+            alpha: 1,
+            color: shredColors[Math.floor(Math.random() * shredColors.length)],
+            size: 4 + Math.random() * 6,
+            shape: 'shred',
+            rotation: Math.random() * Math.PI * 2,
+            rotationSpeed: (Math.random() - 0.5) * 14,
+          });
+        }
+
+        // 2. White smoke / steam puffs from pop
+        for (let p = 0; p < 18; p++) {
+          const angle = Math.random() * Math.PI * 2;
+          const spd = 40 + Math.random() * 80;
+          particles.push({
+            x: catcherX + (Math.random() - 0.5) * 20,
+            y: envY + (Math.random() - 0.5) * 20,
+            vx: Math.cos(angle) * spd,
+            vy: Math.sin(angle) * spd - 30,
+            alpha: 0.85,
+            color: '#F1F5F9',
+            size: 10 + Math.random() * 12,
+            shape: 'smoke',
+          });
+        }
+
+        // 3. Danger sparks from puncture impact
+        for (let p = 0; p < 20; p++) {
+          const angle = Math.random() * Math.PI * 2;
+          const spd = 90 + Math.random() * 180;
+          particles.push({
+            x: hitX,
+            y: hitY,
+            vx: Math.cos(angle) * spd,
+            vy: Math.sin(angle) * spd,
+            alpha: 1,
+            color: p % 2 === 0 ? '#EF4444' : '#FBBF24',
+            size: 3 + Math.random() * 3,
+          });
+        }
+
+        // 4. Floating pop message
+        floatingTexts.push({
+          text: '💥 POP! BALLOON BURST!',
+          x: catcherX,
+          y: Math.max(35, envY - 25),
+          alpha: 1,
+          color: '#DC2626',
+          isCoin: true,
+        });
+
+        setTimeout(() => {
+          gameOver('burst');
+        }, 650);
+      }
+
+      if (gameState === 'playing' && !balloonBursted) {
+        // Calculate flight duration in seconds
+        const flightTime = flightStartTime > 0 ? (currentTime - flightStartTime) / 1000 : 0;
+
+        // 1. Time-Based Falling Speed Multipliers (Smoothly ramps from 1.0x up to 2.8x over time)
+        const speedMultiplier = 1.0 + Math.min(1.8, flightTime * 0.028);
+
+        // 2. Wind Swerve & Flutter (Items weave wider horizontally as flight continues)
+        const windSwerve = Math.min(32, 14 + flightTime * 0.32);
+
+        // 3. Catch Window Tightening (Requires sharper piloting precision over time)
+        const catchTolerance = Math.max(6, 15 - flightTime * 0.18);
+
+        // 4. Dynamic Spawning: Drops from 1100ms down to 360ms over time
+        spawnInterval = Math.max(360, 1100 - flightTime * 14 - hearts * 6);
+
+        // 5. Sky Dart Hazard Probability: 0% during 4s start grace period, then smoothly scales up to 25%
+        const hazardChance = flightTime < 4.0 ? 0 : Math.min(0.25, 0.05 + (flightTime - 4.0) * 0.003 + hearts * 0.002);
+
+        // Falling Items Spawner
+        if (currentTime - lastSpawn > spawnInterval) {
+          lastSpawn = currentTime;
+
+          const rand = Math.random();
+          let kind = 'heart';
+          const kissChance = 0.20;
+          const goldenChance = 0.08; // Rare life preserver (reduced to make survival harder)
+
+          if (rand < hazardChance) {
+            kind = 'hazard'; // 📍 Sharp Sky Dart!
+          } else if (rand < hazardChance + kissChance) {
+            kind = 'kiss'; // 22% chance of falling kiss 💋!
+          } else if (rand < hazardChance + kissChance + goldenChance) {
+            kind = 'golden'; // 14% chance of golden heart 💛
+          } else {
+            kind = 'heart'; // Standard heart ❤️
+          }
+
+          const baseSpeed = kind === 'hazard'
+            ? 205 + Math.random() * 65
+            : kind === 'kiss'
+            ? 175 + Math.random() * 50
+            : kind === 'golden'
+            ? 200 + Math.random() * 50
+            : 155 + Math.random() * 60;
+
+          // Items fall faster over time, combining time multiplier and score scaling
+          const initialSpeed = (baseSpeed + hearts * 1.2) * speedMultiplier;
+
+          fallingHearts.push({
+            id: nextId++,
+            x: Math.random() * (width - 60) + 30,
+            y: -24,
+            size: kind === 'kiss' ? 24 : kind === 'golden' ? 24 : kind === 'hazard' ? 22 : 20,
+            speed: initialSpeed,
+            wobble: Math.random() * Math.PI * 2,
+            wobbleSpeed: (kind === 'hazard' ? 3.8 : kind === 'kiss' ? 3.4 : 2.5) + Math.random() * 2,
+            wobbleAmount: windSwerve * (0.8 + Math.random() * 0.4),
+            kind: kind
+          });
+        }
+
+        // Falling items physics & collisions
+        for (let i = fallingHearts.length - 1; i >= 0; i--) {
+          const h = fallingHearts[i];
+          // Downward gravity acceleration increases as flight time climbs
+          h.speed += (24 + flightTime * 0.4) * dt;
+          h.y += h.speed * dt;
+          h.wobble += h.wobbleSpeed * dt * (1 + flightTime * 0.015);
+          const currentWobble = h.wobbleAmount || windSwerve;
+          const wobbleX = h.x + Math.sin(h.wobble) * currentWobble;
+
+          // 1. Basket Catch Zone (pilot in basket catches it - tighter margin over time)
+          const basketHitX = wobbleX >= catcherX - halfW - catchTolerance && wobbleX <= catcherX + halfW + catchTolerance;
+          const basketHitY = h.y + h.size >= catcherY - catcherHeight / 2 - (catchTolerance + 2) && h.y - h.size <= catcherY + catcherHeight / 2 + 6;
+          const basketHit = basketHitX && basketHitY;
+
+          // 2. Balloon Envelope Catch Zone (intercept items with the balloon)
+          const envY = catcherY - 76;
+          const edx = wobbleX - catcherX;
+          const edy = h.y - envY;
+          const envelopeRadius = 34 + catchTolerance * 0.4 + h.size;
+          const envelopeHit = (edx * edx) + (edy * edy) * 0.85 <= envelopeRadius * envelopeRadius;
+
+          const hit = basketHit || envelopeHit;
+
+          if (hit) {
+            if (h.kind === 'hazard') {
+              if (currentTime < invulnerableUntil) {
+                fallingHearts.splice(i, 1);
+                continue;
+              }
+
+              lives--;
+              streak = 0;
+              updateHUD();
+
+              // Sparks at hit point
+              for (let p = 0; p < 16; p++) {
+                const angle = Math.random() * Math.PI * 2;
+                const spd = 70 + Math.random() * 120;
+                particles.push({
+                  x: wobbleX,
+                  y: h.y,
+                  vx: Math.cos(angle) * spd,
+                  vy: Math.sin(angle) * spd,
+                  alpha: 1,
+                  color: p % 2 === 0 ? '#EF4444' : '#FBBF24',
+                  size: 3 + Math.random() * 3,
+                });
+              }
+
+              if (lives <= 0) {
+                // Final life lost: trigger balloon burst
+                triggerBalloonBurst(wobbleX, h.y);
+              } else {
+                invulnerableUntil = currentTime + 1200;
+                screenShake = 12;
+                playSound('miss');
+                floatingTexts.push({
+                  text: `💥 -1 LIFE! (${lives} left)`,
+                  x: catcherX,
+                  y: Math.max(28, h.y - 25),
+                  alpha: 1,
+                  color: '#EF4444',
+                  isCoin: true,
+                });
+              }
+
+              fallingHearts.splice(i, 1);
+              continue;
+            }
+
+            if (h.kind === 'kiss') {
+              // Caught a Kiss! +1 Kiss Coin directly + Kiss score
+              kissCoins++;
+              sessionCoins++;
+              kisses++;
+              playKissSoundEffect(1.0);
+              playSound('kiss');
+
+              floatingTexts.push({
+                text: `💋 MWAH! +1 🪙`,
+                x: wobbleX,
+                y: Math.max(28, h.y - 20),
+                alpha: 1,
+                color: '#E11D48',
+                isCoin: true
+              });
+              showToast('+1 Kiss Coin Earned! 💋');
+
+              // Pink & gold sparkle explosion
+              for (let p = 0; p < 16; p++) {
+                const ang = Math.random() * Math.PI * 2;
+                const spd = 70 + Math.random() * 130;
+                particles.push({
+                  x: wobbleX,
+                  y: h.y,
+                  vx: Math.cos(ang) * spd,
+                  vy: Math.sin(ang) * spd - 45,
+                  alpha: 1,
+                  color: p % 2 === 0 ? '#FF2E63' : '#FFD700',
+                  size: 3.5 + Math.random() * 4
+                });
+              }
+            } else if (h.kind === 'golden') {
+              // Caught Yellow Heart! "The yellow heart keeps you alive"
+              const prevLives = lives;
+              lives = Math.min(3, lives + 1);
+              const healed = lives > prevLives;
+              hearts += healed ? 1 : 3;
+
+              playSound('coin');
+              floatingTexts.push({
+                text: healed ? `💛 +1 LIFE! (${lives}/3)` : `💛 +3 SCORE!`,
+                x: wobbleX,
+                y: Math.max(28, h.y - 20),
+                alpha: 1,
+                color: '#F59E0B',
+                isCoin: true
+              });
+
+              for (let p = 0; p < 16; p++) {
+                const ang = Math.random() * Math.PI * 2;
+                const spd = 70 + Math.random() * 130;
+                particles.push({
+                  x: wobbleX,
+                  y: h.y,
+                  vx: Math.cos(ang) * spd,
+                  vy: Math.sin(ang) * spd - 40,
+                  alpha: 1,
+                  color: p % 2 === 0 ? '#FBBF24' : '#F59E0B',
+                  size: 3.5 + Math.random() * 4
+                });
+              }
+            } else {
+              // Caught Red Heart: purely for score!
+              hearts += 1;
+              playSound('catch');
+              floatingTexts.push({
+                text: '+1 ❤️',
+                x: wobbleX,
+                y: Math.max(28, h.y - 20),
+                alpha: 1,
+                color: '#E11D48'
+              });
+
+              for (let p = 0; p < 12; p++) {
+                const ang = Math.random() * Math.PI * 2;
+                const spd = 60 + Math.random() * 120;
+                particles.push({
+                  x: wobbleX,
+                  y: h.y,
+                  vx: Math.cos(ang) * spd,
+                  vy: Math.sin(ang) * spd - 40,
+                  alpha: 1,
+                  color: '#FB7185',
+                  size: 3 + Math.random() * 4
+                });
+              }
+            }
+
+            updateHUD();
+            fallingHearts.splice(i, 1);
+            continue;
+          }
+
+          if (h.y > height + 25) {
+            fallingHearts.splice(i, 1);
+
+            // Successfully dodging a hazard carries no penalty!
+            if (h.kind === 'hazard') {
+              continue;
+            }
+
+            // Kiss missed: NO life penalty!
+            if (h.kind === 'kiss') {
+              continue;
+            }
+
+            // Missing a HEART (Red or Yellow): each heart missed takes away a life!
+            if (h.kind === 'heart' || h.kind === 'golden') {
+              lives--;
+              streak = 0;
+              playSound('miss');
+              updateHUD();
+
+              const isYellow = h.kind === 'golden';
+              const heartDesc = isYellow ? 'Yellow Heart' : 'Heart';
+              const heartColor = isYellow ? '#F59E0B' : '#EF4444';
+
+              floatingTexts.push({
+                text: lives > 0 ? `💔 Missed ${heartDesc}! (${lives} left)` : '💔 Lost all 3 lives!',
+                x: wobbleX,
+                y: height - 40,
+                alpha: 1,
+                color: heartColor
+              });
+
+              if (lives <= 0) {
+                gameOver('miss');
+              }
+              continue;
+            }
+          }
+
+          if (h.kind === 'kiss') {
+            drawKiss(ctx, wobbleX, h.y, h.size, h.wobble);
+          } else if (h.kind === 'golden') {
+            drawHeart(ctx, wobbleX, h.y, h.size, '#F59E0B', true, h.wobble);
+          } else if (h.kind === 'hazard') {
+            drawHazardDart(ctx, wobbleX, h.y, h.size, h.wobble);
+          } else {
+            drawHeart(ctx, wobbleX, h.y, h.size, '#FF3366', false, h.wobble);
+          }
+        }
+      }
+
+      // Particles
+      for (let pIdx = particles.length - 1; pIdx >= 0; pIdx--) {
+        const p = particles[pIdx];
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vy += (p.shape === 'smoke' ? -25 : 190) * dt;
+        p.alpha -= (p.shape === 'smoke' ? 1.0 : 1.7) * dt;
+        if (p.rotation !== undefined && p.rotationSpeed !== undefined) {
+          p.rotation += p.rotationSpeed * dt;
+        }
+
+        if (p.alpha <= 0) {
+          particles.splice(pIdx, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.fillStyle = p.color;
+
+        if (p.shape === 'shred') {
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation || 0);
+          ctx.beginPath();
+          ctx.rect(-p.size, -p.size / 2, p.size * 2, p.size);
+          ctx.fill();
+        } else if (p.shape === 'smoke') {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // Floating Texts
+      for (let tIdx = floatingTexts.length - 1; tIdx >= 0; tIdx--) {
+        const ft = floatingTexts[tIdx];
+        ft.y -= 45 * dt;
+        ft.alpha -= 0.9 * dt;
+
+        if (ft.alpha <= 0) {
+          floatingTexts.splice(tIdx, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = ft.alpha;
+        ctx.font = ft.isCoin ? 'bold 16px "Rubik", sans-serif' : 'bold 14px "Rubik", sans-serif';
+        ctx.fillStyle = ft.color;
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+        ctx.shadowBlur = 6;
+        ctx.fillText(ft.text, ft.x, ft.y);
+        ctx.restore();
+      }
+
+      ctx.restore(); // Restore screenShake translate
+    }
+    requestAnimationFrame(loop);
+
+    // Controls (Mouse, Pointer, Touch, and Keyboard)
+    let isDragging = false;
+
+    function handlePointerMove(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const halfW = catcherWidth / 2;
+      const minX = halfW + 6;
+      const maxX = rect.width - halfW - 6;
+      const minY = 95;
+      const maxY = rect.height - 26;
+      catcherTargetX = Math.max(minX, Math.min(maxX, clientX - rect.left));
+      catcherTargetY = Math.max(minY, Math.min(maxY, clientY - rect.top));
+    }
+
+    canvas.addEventListener('pointerdown', e => {
+      isDragging = true;
+      handlePointerMove(e.clientX, e.clientY);
+    });
+    window.addEventListener('pointermove', e => {
+      if (isDragging || e.target === canvas) {
+        handlePointerMove(e.clientX, e.clientY);
+      }
+    });
+    window.addEventListener('pointerup', () => {
+      isDragging = false;
+    });
+    window.addEventListener('pointercancel', () => {
+      isDragging = false;
+    });
+
+    canvas.addEventListener('mousemove', e => handlePointerMove(e.clientX, e.clientY));
+    canvas.addEventListener('mousedown', e => handlePointerMove(e.clientX, e.clientY));
+    canvas.addEventListener('touchmove', e => {
+      if (e.touches.length > 0) {
+        e.preventDefault();
+        handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: false });
+    canvas.addEventListener('touchstart', e => {
+      if (e.touches.length > 0) {
+        e.preventDefault();
+        handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: false });
+
+    window.addEventListener('keydown', e => {
+      const keys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'KeyA', 'KeyD', 'KeyW', 'KeyS', 'a', 'd', 'w', 's'];
+      if (keys.includes(e.key) || keys.includes(e.code)) {
+        keysPressed.add(e.key.toLowerCase());
+        keysPressed.add(e.code);
+        if (e.key.startsWith('Arrow')) e.preventDefault();
+      }
+    });
+
+    window.addEventListener('keyup', e => {
+      keysPressed.delete(e.key.toLowerCase());
+      keysPressed.delete(e.code);
+    });
+
+    document.getElementById('startBtn').addEventListener('click', startGame);
+    document.getElementById('retryBtn').addEventListener('click', startGame);
+
+    // Real-time character counters for 65-character messages
+    const bannerTextInput = document.getElementById('bannerTextInput');
+    const bannerCharCount = document.getElementById('bannerCharCount');
+    if (bannerTextInput && bannerCharCount) {
+      bannerTextInput.addEventListener('input', () => {
+        bannerCharCount.innerText = `${bannerTextInput.value.length}/65`;
+      });
+    }
+
+    const vipTextInput = document.getElementById('vipTextInput');
+    const vipCharCount = document.getElementById('vipCharCount');
+    if (vipTextInput && vipCharCount) {
+      vipTextInput.addEventListener('input', () => {
+        vipCharCount.innerText = `${vipTextInput.value.length}/65`;
+      });
+    }
+
+    // Save Champion Banner Message (End of turn when new high score is achieved)
+    document.getElementById('saveBannerBtn').addEventListener('click', () => {
+      const msg = document.getElementById('bannerTextInput').value.trim() || 'Kiss the sky! 💋';
+      const now = Date.now();
+      const feedbackEl = document.getElementById('bannerSavedFeedback');
+
+      if (bannerIsSponsor && vipShieldUntil > now) {
+        // 1-Hour VIP Shield is active! Queue this champion's message
+        pendingChampionMessage = msg;
+        localStorage.setItem('kiss_coin_pending_champ_msg', msg);
+        const remMins = Math.max(1, Math.ceil((vipShieldUntil - now) / 60000));
+        if (feedbackEl) {
+          feedbackEl.style.display = 'block';
+          feedbackEl.style.background = '#FFFBEB';
+          feedbackEl.style.color = '#B45309';
+          feedbackEl.style.border = '1px solid #FDE68A';
+          feedbackEl.innerHTML = `🛡️ <strong>Record Broken! Banner Queued</strong><br><span style="font-weight:500; font-size:10px; color:#78350F;">Active 1-Hour VIP banner has ${remMins}m left. Your message is queued and will take flight automatically when the VIP hour ends!</span>`;
+        }
+        showToast(`🛡️ Record set! Your banner is queued for when the 1-hour VIP banner finishes.`);
+        return;
+      }
+
+      bannerMessage = msg;
+      bannerAuthor = 'Sky Champion';
+      bannerIsSponsor = false;
+      vipShieldUntil = 0;
+      pendingChampionMessage = '';
+      localStorage.setItem('kiss_coin_banner_message', msg);
+      localStorage.setItem('kiss_coin_banner_author', bannerAuthor);
+      localStorage.setItem('kiss_coin_banner_sponsor', 'false');
+      localStorage.removeItem('kiss_coin_vip_shield_until');
+      localStorage.removeItem('kiss_coin_pending_champ_msg');
+      updateBannerUI();
+      if (feedbackEl) {
+        feedbackEl.style.display = 'block';
+        feedbackEl.style.background = '#ECFDF5';
+        feedbackEl.style.color = '#047857';
+        feedbackEl.style.border = 'none';
+        feedbackEl.innerText = '✓ Flying on balloon banner!';
+      }
+      showToast('👑 Champion Banner active until someone beats your score!');
+    });
+
+    // 1 WLD VIP Override Modal Controls
+    function openVipModal() {
+      const modal = document.getElementById('vipModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        const vMsg = document.getElementById('vipTextInput');
+        const vStatus = document.getElementById('vipPayStatus');
+        if (vMsg) vMsg.value = '';
+        if (vStatus) vStatus.style.display = 'none';
+        const vCount = document.getElementById('vipCharCount');
+        if (vCount) vCount.innerText = '0/65';
+      }
+    }
+
+    const overrideStartBtn = document.getElementById('overrideStartBtn');
+    if (overrideStartBtn) overrideStartBtn.addEventListener('click', openVipModal);
+
+    const overrideGameOverBtn = document.getElementById('overrideGameOverBtn');
+    if (overrideGameOverBtn) overrideGameOverBtn.addEventListener('click', openVipModal);
+
+    const payBannerMainBtn = document.getElementById('payBannerMainBtn');
+    if (payBannerMainBtn) payBannerMainBtn.addEventListener('click', openVipModal);
+
+    const payBannerGameOverBtn = document.getElementById('payBannerGameOverBtn');
+    if (payBannerGameOverBtn) payBannerGameOverBtn.addEventListener('click', openVipModal);
+
+    const closeVipModalBtn = document.getElementById('closeVipModalBtn');
+    if (closeVipModalBtn) {
+      closeVipModalBtn.addEventListener('click', () => {
+        document.getElementById('vipModal').classList.add('hidden');
+      });
+    }
+
+    // Process 1 WLD payment and activate 1-hour guaranteed VIP banner
+    const submitVipPayBtn = document.getElementById('submitVipPayBtn');
+    if (submitVipPayBtn) {
+      submitVipPayBtn.addEventListener('click', async () => {
+        const msg = document.getElementById('vipTextInput').value.trim() || 'Kiss the sky with 1 WLD! 💎';
+        const author = 'VIP Sponsor';
+        const statusEl = document.getElementById('vipPayStatus');
+        submitVipPayBtn.disabled = true;
+        submitVipPayBtn.innerText = 'Processing 1 WLD Payment... ⏳';
+
+        if (statusEl) {
+          statusEl.style.display = 'block';
+          statusEl.style.background = '#FEF3C7';
+          statusEl.style.color = '#B45309';
+          statusEl.innerText = 'Authorizing 1 WLD via World App...';
+        }
+
+        setTimeout(() => {
+          const now = Date.now();
+          bannerAuthor = author;
+          bannerMessage = msg;
+          bannerIsSponsor = true;
+          vipShieldUntil = now + 3600 * 1000; // 1 full hour
+          pendingChampionMessage = '';
+          localStorage.setItem('kiss_coin_banner_author', author);
+          localStorage.setItem('kiss_coin_banner_message', msg);
+          localStorage.setItem('kiss_coin_banner_sponsor', 'true');
+          localStorage.setItem('kiss_coin_vip_shield_until', vipShieldUntil.toString());
+          localStorage.removeItem('kiss_coin_pending_champ_msg');
+          updateBannerUI();
+
+          if (statusEl) {
+            statusEl.style.background = '#ECFDF5';
+            statusEl.style.color = '#047857';
+            statusEl.innerText = '✓ 1 WLD Paid! 1-Hour VIP Shield Active 💎';
+          }
+          submitVipPayBtn.innerText = '✓ 1-Hour Shield Active!';
+          playSound('coin');
+          showToast('💎 1-Hour VIP Sky Banner Shield is now active! (1 WLD Paid)');
+
+          setTimeout(() => {
+            document.getElementById('vipModal').classList.add('hidden');
+            submitVipPayBtn.disabled = false;
+            submitVipPayBtn.innerText = 'Pay 1 WLD (Fly for 1 Hour 💎)';
+          }, 1400);
+        }, 1200);
+      });
+    }
+
+    // Periodic VIP expiration check and countdown sync
+    setInterval(() => {
+      const now = Date.now();
+      if (bannerIsSponsor && vipShieldUntil > 0) {
+        if (vipShieldUntil <= now) {
+          // VIP hour ended!
+          if (pendingChampionMessage) {
+            bannerMessage = pendingChampionMessage;
+            bannerAuthor = 'Sky Champion';
+            bannerIsSponsor = false;
+            vipShieldUntil = 0;
+            pendingChampionMessage = '';
+            localStorage.setItem('kiss_coin_banner_message', bannerMessage);
+            localStorage.setItem('kiss_coin_banner_author', bannerAuthor);
+            localStorage.setItem('kiss_coin_banner_sponsor', 'false');
+            localStorage.removeItem('kiss_coin_vip_shield_until');
+            localStorage.removeItem('kiss_coin_pending_champ_msg');
+            updateBannerUI();
+            showToast('👑 1-Hour VIP ended! Queued Champion banner is now flying!');
+          } else {
+            vipShieldUntil = 0;
+            localStorage.removeItem('kiss_coin_vip_shield_until');
+            updateBannerUI();
+          }
+        } else {
+          // Shield still active, update UI countdown
+          updateBannerUI();
+        }
+      }
+    }, 5000);
+
+    // Audio & Settings toggles
+    function updateSoundUI() {
+      const svgOn = document.getElementById('soundSvgOn');
+      const svgOff = document.getElementById('soundSvgOff');
+      if (svgOn && svgOff) {
+        svgOn.style.display = soundEnabled ? 'block' : 'none';
+        svgOff.style.display = soundEnabled ? 'none' : 'block';
+      }
+      const toggle = document.getElementById('settingSoundToggle');
+      if (toggle) toggle.checked = soundEnabled;
+    }
+
+    document.getElementById('soundToggleBtn').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      updateSoundUI();
+      showToast(soundEnabled ? 'Sound FX Enabled' : 'Sound FX Muted');
+    });
+
+    document.getElementById('settingSoundToggle').addEventListener('change', (e) => {
+      soundEnabled = e.target.checked;
+      updateSoundUI();
+    });
+
+    document.getElementById('claimRewardBtn').addEventListener('click', () => {
+      showToast('Connecting to World ID Wallet...');
+      setTimeout(() => {
+        showToast('✓ Kiss Coins Verified on World Chain!');
+      }, 1200);
+    });
+
+    document.getElementById('transferBtn').addEventListener('click', () => {
+      showToast('Share link copied to clipboard!');
+    });
+
+    document.getElementById('resetDataBtn').addEventListener('click', () => {
+      localStorage.removeItem('kiss_coin_high_score');
+      localStorage.removeItem('kiss_coins_total');
+      highScore = 0;
+      kissCoins = 0;
+      updateHUD();
+      updateWalletUI();
+      updateHighScoreUI();
+      showToast('Local scores and coins reset');
+    });
+
+  </script>
+</body>
+</html>

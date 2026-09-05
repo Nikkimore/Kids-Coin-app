@@ -1191,18 +1191,32 @@ export const KissCoinGame: React.FC = () => {
 
       ctx.save();
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, '#FFF5F7');
-      bgGrad.addColorStop(1, '#FFE8ED');
+      bgGrad.addColorStop(0, '#38BDF8');   // Vibrant Cyan Sky
+      bgGrad.addColorStop(0.35, '#7DD3FC'); // Bright Daytime Sky
+      bgGrad.addColorStop(0.68, '#FDE047'); // Warm Golden Sunlight
+      bgGrad.addColorStop(0.85, '#F472B6'); // Soft Pink Twilight
+      bgGrad.addColorStop(1, '#FB7185');    // Warm Sunset Rose Horizon
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      ctx.strokeStyle = 'rgba(255, 105, 140, 0.08)';
-      ctx.lineWidth = 1;
-      for (let y = 30; y < height; y += 35) {
+      // Soft drifting cartoon clouds in the sky
+      const cloudTime = Date.now() * 0.001;
+      const clouds = [
+        { x: ((cloudTime * 12 + 40) % (width + 140)) - 70, y: 50, r: 24, alpha: 0.6 },
+        { x: ((cloudTime * 8 + 190) % (width + 160)) - 80, y: 115, r: 30, alpha: 0.5 },
+        { x: ((cloudTime * 14 + 310) % (width + 130)) - 65, y: 180, r: 22, alpha: 0.55 },
+        { x: ((cloudTime * 10 + 100) % (width + 150)) - 75, y: 250, r: 26, alpha: 0.45 },
+      ];
+
+      for (const cloud of clouds) {
+        ctx.fillStyle = `rgba(255, 255, 255, ${cloud.alpha})`;
         ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
+        ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2);
+        ctx.arc(cloud.x + cloud.r * 0.65, cloud.y - cloud.r * 0.25, cloud.r * 0.75, 0, Math.PI * 2);
+        ctx.arc(cloud.x - cloud.r * 0.65, cloud.y - cloud.r * 0.2, cloud.r * 0.7, 0, Math.PI * 2);
+        ctx.arc(cloud.x + cloud.r * 1.1, cloud.y + cloud.r * 0.15, cloud.r * 0.55, 0, Math.PI * 2);
+        ctx.arc(cloud.x - cloud.r * 1.1, cloud.y + cloud.r * 0.15, cloud.r * 0.55, 0, Math.PI * 2);
+        ctx.fill();
       }
       ctx.restore();
 
@@ -1871,18 +1885,18 @@ export const KissCoinGame: React.FC = () => {
   return (
     <div className="w-full max-w-md mx-auto flex flex-col items-center select-none text-slate-900">
       {/* Top HUD with $KISS Crypto Token Vault & Flight Stats */}
-      <div className="w-full bg-white rounded-xl shadow-xs border border-pink-100 px-2.5 py-1.5 mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {/* Kiss Coins Badge: light pink background, matching squircle shape, balloon kiss */}
-          <div className="flex items-center gap-1.5">
-            <div className="w-7 h-7 rounded-lg bg-pink-50 border border-pink-200/90 flex items-center justify-center shadow-xs shrink-0">
-              <BalloonKissIcon size={19} />
+      <div className="w-full bg-white/85 backdrop-blur-xl rounded-2xl shadow-sm border border-white/90 px-3 py-2 mb-2.5 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          {/* Kiss Coins Badge: Significantly enlarged, glossy squircle */}
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-100 via-rose-50 to-white border-2 border-rose-300 shadow-sm flex items-center justify-center shrink-0 ring-2 ring-pink-100/70">
+              <BalloonKissIcon size={28} />
             </div>
             <div>
-              <div className="text-[9px] text-pink-700 font-extrabold uppercase tracking-wider leading-none mb-0.5">
+              <div className="text-[9.5px] text-pink-700 font-black uppercase tracking-wider leading-none mb-0.5">
                 Kiss Coins
               </div>
-              <div className="text-[13px] font-black text-rose-600 leading-tight">
+              <div className="text-base font-black text-rose-600 leading-none">
                 {totalKissTokens}
               </div>
             </div>
@@ -1890,15 +1904,15 @@ export const KissCoinGame: React.FC = () => {
 
           {/* User Highest Score (shown if player has a previous score or on game over) */}
           {(highScore > 0 || gameState === 'gameover') && (
-            <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200 animate-fade-in" title={`Best Score: ${highScore}`}>
-              <div className="w-7 h-7 rounded-lg bg-amber-50 border border-amber-200/90 flex items-center justify-center text-sm shadow-xs shrink-0">
+            <div className="flex items-center gap-2 pl-2.5 border-l border-pink-200/60 animate-fade-in" title={`Best Score: ${highScore}`}>
+              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-100 via-yellow-50 to-white border-2 border-amber-300 shadow-sm flex items-center justify-center text-base shrink-0 ring-2 ring-amber-100/70">
                 🏆
               </div>
               <div>
-                <div className="text-[9px] text-amber-800 font-extrabold uppercase tracking-wider leading-none mb-0.5">
+                <div className="text-[9.5px] text-amber-800 font-black uppercase tracking-wider leading-none mb-0.5">
                   Best Score
                 </div>
-                <div className="text-[13px] font-black text-amber-600 leading-tight">
+                <div className="text-base font-black text-amber-600 leading-none">
                   {highScore}
                 </div>
               </div>
@@ -1908,26 +1922,26 @@ export const KissCoinGame: React.FC = () => {
 
         {(gameState === 'playing' || gameState === 'paused') && (
           <div className="flex items-center gap-2 animate-fade-in">
-            <div className="text-center">
-              <div className="text-[8.5px] text-slate-500 font-extrabold uppercase tracking-wider leading-none mb-0.5">Score</div>
-              <div className="text-[13px] font-black text-rose-600 leading-tight">
+            <div className="text-center bg-white/70 rounded-xl px-2 py-1 border border-pink-100 shadow-2xs">
+              <div className="text-[8px] text-slate-500 font-black uppercase tracking-wider leading-none mb-0.5">Score</div>
+              <div className="text-sm font-black text-rose-600 leading-none">
                 {heartsCaught}
               </div>
             </div>
 
-            <div className="text-center">
-              <div className="text-[8.5px] text-slate-500 font-extrabold uppercase tracking-wider leading-none mb-0.5">Kisses</div>
-              <div className="text-[13px] font-bold text-pink-600 flex items-center justify-center gap-0.5 leading-tight">
+            <div className="text-center bg-white/70 rounded-xl px-2 py-1 border border-pink-100 shadow-2xs">
+              <div className="text-[8px] text-slate-500 font-black uppercase tracking-wider leading-none mb-0.5">Kisses</div>
+              <div className="text-sm font-black text-pink-600 flex items-center justify-center gap-0.5 leading-none">
                 💋 {kissesCaught}
               </div>
             </div>
 
-            <div className="flex gap-0.5 items-center" title="Lives (Yellow Hearts Keep You Alive!)">
+            <div className="flex gap-0.5 items-center bg-white/70 rounded-xl px-1.5 py-1 border border-pink-100 shadow-2xs" title="Lives (Yellow Hearts Keep You Alive!)">
               {[1, 2, 3].map((heartIndex) => (
                 <span
                   key={heartIndex}
-                  className={`text-xs transition-all duration-200 ${
-                    heartIndex <= lives ? 'scale-100 filter drop-shadow-[0_0_4px_rgba(245,158,11,0.6)]' : 'scale-75 opacity-25 grayscale'
+                  className={`text-sm transition-all duration-200 ${
+                    heartIndex <= lives ? 'scale-100 filter drop-shadow-[0_0_5px_rgba(245,158,11,0.8)]' : 'scale-75 opacity-20 grayscale'
                   }`}
                 >
                   💛
@@ -1940,13 +1954,13 @@ export const KissCoinGame: React.FC = () => {
         <button
           type="button"
           onClick={() => setSoundEnabled(!soundEnabled)}
-          className="w-[26px] h-[26px] rounded-full bg-slate-100/90 hover:bg-slate-200/90 border border-slate-200/80 text-slate-700 flex items-center justify-center transition-all active:scale-95 shadow-xs shrink-0 ml-1"
+          className="w-8 h-8 rounded-full bg-white/80 hover:bg-white border border-pink-200/80 text-slate-700 flex items-center justify-center transition-all active:scale-95 shadow-xs shrink-0 ml-1 cursor-pointer"
           title={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
           aria-label={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
         >
           {soundEnabled ? (
             <svg
-              className="w-3.5 h-3.5 text-slate-700"
+              className="w-4 h-4 text-slate-700"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -1960,7 +1974,7 @@ export const KissCoinGame: React.FC = () => {
             </svg>
           ) : (
             <svg
-              className="w-3.5 h-3.5 text-slate-400"
+              className="w-4 h-4 text-slate-400"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -1976,184 +1990,170 @@ export const KissCoinGame: React.FC = () => {
         </button>
       </div>
 
-      <div className="relative w-full aspect-[4/5] max-h-[520px] rounded-3xl overflow-hidden border-2 border-pink-200 shadow-lg bg-pink-50">
+      <div className="relative w-full aspect-[4/5] max-h-[530px] rounded-[36px] overflow-hidden border-4 border-white/85 shadow-[0_20px_50px_rgba(244,63,94,0.3)] bg-gradient-to-b from-sky-300 to-rose-200 ring-1 ring-pink-200/60">
         <canvas ref={canvasRef} className="w-full h-full block cursor-grab active:cursor-grabbing touch-none" />
 
-        {/* Start / Idle Screen: Ultra-Minimal & Clean */}
+        {/* Start / Idle Screen: Translucent Glassmorphism with BIG Play Game Icon */}
         {gameState === 'idle' && (
-          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-fade-in text-slate-900 z-20">
-            <KissBalloonIcon className="w-28 h-28 mb-3" size={112} />
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight mb-4">Balloon Kiss</h1>
+          <div className="absolute inset-0 bg-slate-900/15 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center animate-fade-in text-slate-900 z-20">
+            <div className="w-full max-w-[310px] bg-white/85 backdrop-blur-xl rounded-[32px] border-2 border-white/95 shadow-[0_20px_50px_rgba(244,63,94,0.25)] p-5 flex flex-col items-center text-center">
+              
+              {/* Balloon Floating Icon */}
+              <KissBalloonIcon className="w-22 h-22 mb-2 shadow-[0_12px_28px_rgba(244,63,94,0.35)]" size={88} />
+              
+              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-pink-500 to-amber-500 tracking-tight mb-1">
+                Balloon Kiss
+              </h2>
+              <p className="text-xs font-bold text-slate-500 mb-4">
+                Catch kisses & stay alive! 💋🎈
+              </p>
 
-            {/* Active Sky Banner: Minimal pill */}
-            <div className="w-full max-w-xs bg-amber-50/90 border border-amber-200 rounded-2xl py-2 px-3 mb-5 flex items-center justify-between gap-2 shadow-xs">
-              <div className="flex items-center gap-2 overflow-hidden min-w-0 text-left">
-                <span className="text-base shrink-0">{bannerIsSponsor ? '💎' : '👑'}</span>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-slate-800 truncate">
-                    &quot;{bannerMessage}&quot;
-                  </span>
-                  {bannerIsSponsor && isBannerShielded && bannerRemainingSeconds > 0 ? (
-                    <span className="text-[10px] font-extrabold text-amber-700 flex items-center gap-1">
-                      <span>🛡️ 1-Hr VIP Shield:</span>
-                      <span>{Math.floor(bannerRemainingSeconds / 60)}m {bannerRemainingSeconds % 60}s left</span>
+              {/* BIG PLAY GAME BUTTON / ICON (User Requested!) */}
+              <button
+                type="button"
+                onClick={startGame}
+                className="group relative w-full max-w-[260px] h-[66px] bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:from-rose-600 hover:to-pink-600 text-white font-black rounded-3xl shadow-[0_14px_34px_rgba(244,63,94,0.55)] border-2 border-white/90 active:scale-95 transition-all flex items-center justify-center gap-3.5 mb-3.5 select-none cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-white text-rose-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                  <svg className="w-6 h-6 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.14v13.72a1 1 0 001.5.86l11-6.86a1 1 0 000-1.72l-11-6.86a1 1 0 00-1.5.86z" />
+                  </svg>
+                </div>
+                <div className="flex flex-col text-left">
+                  <span className="text-lg font-black tracking-wide leading-tight">PLAY GAME</span>
+                  <span className="text-[10px] font-extrabold text-pink-100 uppercase tracking-wider">Tap to Fly 🎈</span>
+                </div>
+              </button>
+
+              {/* Active Sky Banner Minimal Pill */}
+              <div className="w-full bg-gradient-to-r from-amber-50/90 to-pink-50/90 border border-amber-200/80 rounded-2xl py-2 px-3 flex items-center justify-between gap-2 shadow-2xs">
+                <div className="flex items-center gap-2 overflow-hidden min-w-0 text-left">
+                  <span className="text-base shrink-0">{bannerIsSponsor ? '💎' : '👑'}</span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-xs font-bold text-slate-800 truncate">
+                      &quot;{bannerMessage}&quot;
                     </span>
-                  ) : (
                     <span className="text-[9.5px] font-semibold text-slate-400">
                       {bannerAuthor}
                     </span>
-                  )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSponsorMessage('');
+                    setShowWldModal(true);
+                  }}
+                  className="px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-[10.5px] font-black rounded-xl shrink-0 transition-transform active:scale-95 shadow-xs flex items-center gap-1 cursor-pointer"
+                  title="VIP 1-Hour Guaranteed Banner for 1 WLD"
+                >
+                  <span>1 WLD</span>
+                  <span>💎</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* Game Over Screen: Translucent Frosted Glass & Polished Results */}
+        {gameState === 'gameover' && (
+          <div className="absolute inset-0 bg-slate-900/15 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center animate-fade-in text-slate-900 z-20">
+            <div className="w-full max-w-[310px] bg-white/90 backdrop-blur-xl rounded-[32px] border-2 border-white/95 shadow-[0_20px_50px_rgba(244,63,94,0.25)] p-5 flex flex-col items-center text-center">
+              <div className="text-4xl mb-1 filter drop-shadow-sm">
+                {isNewRecord ? '👑' : '🎈'}
+              </div>
+              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-pink-500 to-amber-500 mb-3">
+                {isNewRecord ? 'New Record!' : 'Game Over'}
+              </h2>
+
+              {/* Score & Best */}
+              <div className="flex items-center justify-center gap-6 mb-4 bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200/80 rounded-2xl py-3 px-6 w-full shadow-2xs">
+                <div className="text-center">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Score</div>
+                  <div className="text-2xl font-black text-pink-600 leading-tight">
+                    {lastFlightScore}
+                  </div>
+                </div>
+                <div className="w-px h-8 bg-pink-300/60" />
+                <div className="text-center">
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Best Score</div>
+                  <div className="text-2xl font-black text-amber-600 leading-tight">
+                    {highScore}
+                  </div>
                 </div>
               </div>
+
+              {/* IF NEW RECORD: Message composer with 1-hour VIP shield queue support */}
+              {isNewRecord && (
+                <div className="w-full mb-3.5">
+                  {bannerSaved ? (
+                    isBannerQueued ? (
+                      <div className="text-[11px] font-bold text-amber-900 bg-amber-50 border border-amber-200 py-2 px-3 rounded-xl text-left leading-tight">
+                        <span className="font-black text-amber-800">🛡️ Record Broken!</span> VIP shield active, your message &quot;{newBannerText.trim() || 'Kiss the sky! 💋'}&quot; is queued!
+                      </div>
+                    ) : (
+                      <div className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 py-2 px-3 rounded-xl">
+                        ✓ Flying on banner: &quot;{bannerMessage}&quot;
+                      </div>
+                    )
+                  ) : (
+                    <form onSubmit={handleSaveBanner} className="flex flex-col gap-1.5">
+                      {isBannerShielded && bannerRemainingSeconds > 0 && (
+                        <div className="text-[10px] font-semibold text-amber-700 bg-amber-50/80 border border-amber-200 rounded-lg px-2 py-1 text-left flex items-center gap-1">
+                          <span>🛡️</span>
+                          <span>1-Hr VIP Shield active ({Math.floor(bannerRemainingSeconds / 60)}m left) — your banner will queue to fly next!</span>
+                        </div>
+                      )}
+                      <div className="flex gap-1.5">
+                        <input
+                          type="text"
+                          maxLength={65}
+                          value={newBannerText}
+                          onChange={(e) => setNewBannerText(e.target.value)}
+                          placeholder="Your banner message..."
+                          className="flex-1 px-3 py-2 text-xs rounded-xl border border-amber-300 bg-white font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        />
+                        <button
+                          type="submit"
+                          className="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-black rounded-xl shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
+                        >
+                          Fly 👑
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </div>
+              )}
+
+              {/* Primary Action: Play Again */}
+              <button
+                type="button"
+                onClick={startGame}
+                className="group relative w-full max-w-[260px] h-[58px] bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:from-rose-600 hover:to-pink-600 text-white font-black rounded-3xl shadow-[0_12px_32px_rgba(244,63,94,0.5)] border-2 border-white/90 active:scale-95 transition-all flex items-center justify-center gap-3 mb-2.5 select-none cursor-pointer"
+              >
+                <div className="w-9 h-9 rounded-xl bg-white text-rose-500 flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
+                  <svg className="w-5 h-5 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5.14v13.72a1 1 0 001.5.86l11-6.86a1 1 0 000-1.72l-11-6.86a1 1 0 00-1.5.86z" />
+                  </svg>
+                </div>
+                <span className="text-base font-black tracking-wide">Play Again 🎈</span>
+              </button>
+
+              {/* 1 WLD Sponsor Button */}
               <button
                 type="button"
                 onClick={() => {
                   setSponsorMessage('');
                   setShowWldModal(true);
                 }}
-                className="px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-[10px] font-black rounded-xl shrink-0 transition-transform active:scale-95 shadow-xs flex items-center gap-1"
-                title="VIP 1-Hour Guaranteed Banner for 1 WLD"
+                className="w-full max-w-[260px] py-2.5 bg-gradient-to-r from-amber-400 via-amber-500 to-rose-500 hover:from-amber-500 hover:to-rose-600 text-white font-extrabold text-[11.5px] rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 border border-amber-300 cursor-pointer"
+                title="Leave a message on the balloon for 1 hour — 1 WLD"
               >
-                <span>1 WLD</span>
-                <span>💎</span>
+                <span className="text-sm">💎</span>
+                <span>Sponsor Balloon for 1 Hour — 1 WLD</span>
               </button>
             </div>
-
-            {/* Primary Game Action: Play Game */}
-            <button
-              type="button"
-              onClick={startGame}
-              className="w-full max-w-[280px] h-[54px] bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-black text-base rounded-2xl shadow-md active:scale-95 transition-all flex items-center justify-center gap-2 mb-2.5"
-            >
-              <span>Play Game</span>
-              <span className="text-lg">🎈</span>
-            </button>
-
-            {/* User Requested: Leave a message on the balloon for 1 hour — 1 WLD */}
-            <button
-              type="button"
-              onClick={() => {
-                setSponsorMessage('');
-                setShowWldModal(true);
-              }}
-              className="w-full max-w-[280px] h-[54px] px-3.5 bg-gradient-to-r from-amber-500 via-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl shadow-md active:scale-95 transition-all flex flex-col items-center justify-center text-center border border-amber-300/80 leading-tight"
-              title="Leave a message on the balloon for 1 hour — 1 WLD"
-            >
-              <span className="text-[12.5px] font-extrabold tracking-tight">Leave a message on the balloon</span>
-              <span className="text-[13.5px] font-black text-amber-100 flex items-center justify-center gap-1.5 mt-0.5">
-                <span className="text-sm">💎</span>
-                <span>1 Hour — 1 WLD</span>
-              </span>
-            </button>
-
-            {/* Clear Rules Explanation */}
-            <div className="mt-3 flex items-center justify-center gap-2 text-[10.5px] font-bold text-slate-500 bg-slate-100/90 py-1.5 px-3 rounded-xl border border-slate-200">
-              <span className="text-rose-500">❤️ Catch = Score</span>
-              <span>•</span>
-              <span className="text-amber-600">💔 Miss Heart = -1 Life</span>
-              <span>•</span>
-              <span className="text-pink-600">💋 Kiss = $KISS</span>
-            </div>
-          </div>
-        )}
-
-        {/* Game Over Screen: Clean & Minimal */}
-        {gameState === 'gameover' && (
-          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-fade-in text-slate-900 z-20">
-            <div className="text-4xl mb-1">
-              {isNewRecord ? '👑' : '🎈'}
-            </div>
-            <h2 className="text-xl font-black text-slate-900 mb-3">
-              {isNewRecord ? 'New Record!' : 'Game Over'}
-            </h2>
-
-            {/* Score & Best */}
-            <div className="flex items-center justify-center gap-6 mb-5 bg-pink-50/60 border border-pink-100 rounded-2xl py-3 px-6 w-full max-w-xs">
-              <div className="text-center">
-                <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Score</div>
-                <div className="text-2xl font-black text-pink-600 leading-tight">
-                  {lastFlightScore}
-                </div>
-              </div>
-              <div className="w-px h-8 bg-pink-200/80" />
-              <div className="text-center">
-                <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Best Score</div>
-                <div className="text-2xl font-black text-slate-800 leading-tight">
-                  {highScore}
-                </div>
-              </div>
-            </div>
-
-            {/* IF NEW RECORD: Message composer with 1-hour VIP shield queue support */}
-            {isNewRecord && (
-              <div className="w-full max-w-xs mb-4">
-                {bannerSaved ? (
-                  isBannerQueued ? (
-                    <div className="text-[11px] font-bold text-amber-900 bg-amber-50 border border-amber-200 py-2.5 px-3 rounded-xl text-left leading-tight">
-                      <div className="flex items-center gap-1 text-xs font-black text-amber-800 mb-0.5">
-                        <span>🛡️</span>
-                        <span>Record Broken! Banner Queued</span>
-                      </div>
-                      <div className="text-slate-600 font-medium">
-                        A 1-hour VIP banner is currently shielded. Your message <strong>&quot;{newBannerText.trim() || 'Kiss the sky! 💋'}&quot;</strong> is queued and will take flight automatically when the VIP hour ends!
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 py-2 px-3 rounded-xl">
-                      ✓ Flying on banner: &quot;{bannerMessage}&quot;
-                    </div>
-                  )
-                ) : (
-                  <form onSubmit={handleSaveBanner} className="flex flex-col gap-1.5">
-                    {isBannerShielded && bannerRemainingSeconds > 0 && (
-                      <div className="text-[10px] font-semibold text-amber-700 bg-amber-50/80 border border-amber-200 rounded-lg px-2 py-1 text-left flex items-center gap-1">
-                        <span>🛡️</span>
-                        <span>1-Hr VIP Shield active ({Math.floor(bannerRemainingSeconds / 60)}m left) — your banner will queue to fly next!</span>
-                      </div>
-                    )}
-                    <div className="flex gap-1.5">
-                      <input
-                        type="text"
-                        maxLength={65}
-                        value={newBannerText}
-                        onChange={(e) => setNewBannerText(e.target.value)}
-                        placeholder="Your banner message..."
-                        className="flex-1 px-3 py-2 text-xs rounded-xl border border-amber-300 bg-white font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      />
-                      <button
-                        type="submit"
-                        className="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-black rounded-xl shadow-xs active:scale-95 whitespace-nowrap"
-                      >
-                        Fly 👑
-                      </button>
-                    </div>
-                  </form>
-                )}
-              </div>
-            )}
-
-            {/* Primary Action: Play Again */}
-            <button
-              type="button"
-              onClick={startGame}
-              className="w-full max-w-xs py-3.5 bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-black text-base rounded-2xl shadow-md active:scale-95 transition-all mb-3"
-            >
-              Play Again 🎈
-            </button>
-
-            {/* User Requested: Leave a message on the balloon for 1 hour — 1 WLD */}
-            <button
-              type="button"
-              onClick={() => {
-                setSponsorMessage('');
-                setShowWldModal(true);
-              }}
-              className="w-full max-w-xs py-3 bg-gradient-to-r from-amber-400 via-amber-500 to-rose-500 hover:from-amber-500 hover:to-rose-600 text-white font-extrabold text-xs rounded-2xl shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 border border-amber-300"
-              title="Leave a message on the balloon for 1 hour — 1 WLD"
-            >
-              <span className="text-base">💎</span>
-              <span>Leave a message on the balloon for 1 hour — 1 WLD</span>
-            </button>
           </div>
         )}
 

@@ -2,8 +2,14 @@ import { auth } from '@/auth';
 import ClientProviders from '@/providers';
 import '@worldcoin/mini-apps-ui-kit-react/styles.css';
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Rubik } from 'next/font/google';
 import './globals.css';
+
+const rubik = Rubik({
+  variable: '--font-rubik',
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '800', '900'],
+});
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -45,7 +51,7 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} `}>
+      <body className={`${rubik.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ClientProviders session={session}>{children}</ClientProviders>
       </body>
     </html>

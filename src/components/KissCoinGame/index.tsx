@@ -6,6 +6,7 @@ import { MiniKit } from '@worldcoin/minikit-js';
 import { Tokens, tokenToDecimals } from '@worldcoin/minikit-js/commands';
 import { playKissSoundEffect } from './kissAudio';
 import { WalletVerification } from '@/components/WalletVerification';
+import { walletAuth } from '@/auth/wallet';
 
 interface Particle {
   x: number;
@@ -561,7 +562,7 @@ export const KissCoinGame: React.FC = () => {
     s.particles = [];
     s.floatingTexts = [];
     s.lastSpawn = performance.now();
-    s.spawnInterval = 1100;
+    s.spawnInterval = 880;
 
     const canvas = canvasRef.current;
     if (canvas && canvas.clientHeight > 0) {
@@ -574,6 +575,18 @@ export const KissCoinGame: React.FC = () => {
 
     playSound('start');
   }, [playSound]);
+
+  // Start game with World ID verification trigger on user gesture
+  const handleStartGameWithAuth = useCallback(async () => {
+    if (MiniKit.isInstalled()) {
+      try {
+        await walletAuth();
+      } catch (err) {
+        console.log('Wallet verification deferred on play:', err);
+      }
+    }
+    startGame();
+  }, [startGame]);
 
   // Main Canvas Render and Game Loop
   useEffect(() => {
@@ -1427,8 +1440,8 @@ export const KissCoinGame: React.FC = () => {
         // Calculate flight duration in seconds
         const flightTime = s.flightStartTime > 0 ? (currentTime - s.flightStartTime) / 1000 : 0;
 
-        // 1. Time-Based Falling Speed Multipliers (Smoothly ramps from 1.0x up to 2.8x over time)
-        const speedMultiplier = 1.0 + Math.min(1.8, flightTime * 0.028);
+        // 1. Time-Based Falling Speed Multipliers (Smoothly ramps from 1.25x up to 3.0x over time)
+        const speedMultiplier = 1.25 + Math.min(1.75, flightTime * 0.038);
 
         // 2. Wind Swerve & Flutter (Items weave wider horizontally as flight continues)
         const windSwerve = Math.min(32, 14 + flightTime * 0.32);
@@ -1436,11 +1449,11 @@ export const KissCoinGame: React.FC = () => {
         // 3. Catch Window Tightening (Requires sharper piloting precision over time)
         const catchTolerance = Math.max(6, 15 - flightTime * 0.18);
 
-        // 4. Dynamic Spawning: Drops from 1100ms down to 360ms over time
-        s.spawnInterval = Math.max(360, 1100 - flightTime * 14 - s.heartsCaught * 6);
+        // 4. Dynamic Spawning: Drops from 880ms down to 280ms over time
+        s.spawnInterval = Math.max(280, 880 - flightTime * 18 - s.heartsCaught * 7);
 
-        // 5. Sky Dart Hazard Probability: 0% during 4s start grace period, then smoothly scales up to 25%
-        const hazardChance = flightTime < 4.0 ? 0 : Math.min(0.25, 0.05 + (flightTime - 4.0) * 0.003 + s.heartsCaught * 0.002);
+        // 5. Sky Dart Hazard Probability: 0% during 3s start grace period, then smoothly scales up to 28%
+        const hazardChance = flightTime < 3.0 ? 0 : Math.min(0.28, 0.06 + (flightTime - 3.0) * 0.004 + s.heartsCaught * 0.002);
 
         if (currentTime - s.lastSpawn > s.spawnInterval) {
           s.lastSpawn = currentTime;
@@ -1461,15 +1474,15 @@ export const KissCoinGame: React.FC = () => {
           }
 
           const baseSpeed = kind === 'hazard'
-            ? 205 + Math.random() * 65
+            ? 275 + Math.random() * 75
             : kind === 'kiss'
-            ? 175 + Math.random() * 50
+            ? 240 + Math.random() * 60
             : kind === 'golden'
-            ? 200 + Math.random() * 50
-            : 155 + Math.random() * 60;
+            ? 255 + Math.random() * 60
+            : 220 + Math.random() * 65;
 
           // Items fall faster over time, combining time multiplier and score scaling
-          const initialSpeed = (baseSpeed + s.heartsCaught * 1.2) * speedMultiplier;
+          const initialSpeed = (baseSpeed + s.heartsCaught * 1.5) * speedMultiplier;
 
           s.hearts.push({
             id: s.nextId++,
@@ -1488,7 +1501,7 @@ export const KissCoinGame: React.FC = () => {
         for (let i = s.hearts.length - 1; i >= 0; i--) {
           const h = s.hearts[i];
           // Downward gravity acceleration increases as flight time climbs
-          h.speed += (24 + flightTime * 0.4) * dt;
+          h.speed += (42 + flightTime * 0.7) * dt;
           h.y += h.speed * dt;
           h.wobble += h.wobbleSpeed * dt * (1 + flightTime * 0.015);
           const currentWobble = h.wobbleAmount || windSwerve;
@@ -1919,7 +1932,7 @@ export const KissCoinGame: React.FC = () => {
     <div className="w-full h-full max-w-md mx-auto flex flex-col items-center select-none text-white min-h-0">
       {/* Top HUD with $KISS Crypto Token Vault & Flight Stats */}
       <div className="w-full bg-zinc-950/90 backdrop-blur-xl rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.8)] border border-zinc-800/90 px-3 py-2 mb-2 flex items-center justify-between text-white shrink-0">
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-2">
           {/* Kiss Coins Badge */}
           <div className="flex items-center gap-1.5 shrink-0" title={`Kiss Coins: ${totalKissTokens}`}>
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-950/90 via-pink-900/60 to-zinc-900 border border-rose-500/80 shadow-[0_0_12px_rgba(244,63,94,0.4)] flex items-center justify-center shrink-0">
@@ -1934,14 +1947,6 @@ export const KissCoinGame: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Divider */}
-          <div className="w-px h-6 bg-zinc-800 shrink-0 mx-1" />
-
-          {/* Game Title directly next to Kiss Coins score */}
-          <h1 className="text-sm sm:text-base font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-400 to-amber-300 drop-shadow-[0_0_8px_rgba(244,63,94,0.4)] whitespace-nowrap truncate">
-            Balloon Kiss <span className="inline-block text-xs sm:text-sm">🎈</span>
-          </h1>
         </div>
 
         {/* Right side controls: In-flight stats during playing, or Wallet Verification & Best Score when idle */}
@@ -2030,11 +2035,22 @@ export const KissCoinGame: React.FC = () => {
       <div className="relative flex-1 w-full rounded-[28px] sm:rounded-[36px] overflow-hidden border-2 border-zinc-800 shadow-[0_0_50px_rgba(244,63,94,0.25)] bg-black ring-1 ring-rose-500/20 min-h-0">
         <canvas ref={canvasRef} className="w-full h-full block cursor-grab active:cursor-grabbing touch-none" />
 
-        {/* Start / Idle Screen: Solid Black Minimalist Picture + Big PLAY GAME Button (No Transparency) */}
+        {/* Start / Idle Screen: Solid Black Screen with Corky Title + Balloon + PLAY GAME Button */}
         {gameState === 'idle' && (
           <div className="absolute inset-0 bg-black flex flex-col items-center justify-center p-6 text-center animate-fade-in text-white z-30">
-            <div className="flex flex-col items-center text-center">
+            <div className="flex flex-col items-center text-center max-w-xs">
               
+              {/* Corky & Fun Title above the Balloon */}
+              <div className="mb-5 flex flex-col items-center select-none">
+                <h1 className="font-quirky text-4xl sm:text-5xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-300 to-amber-300 drop-shadow-[0_4px_16px_rgba(244,63,94,0.85)] transform -rotate-2 hover:rotate-0 transition-transform flex items-center justify-center gap-2.5">
+                  <span>Balloon Kiss</span>
+                  <span className="inline-block text-3xl sm:text-4xl filter drop-shadow-[0_0_10px_rgba(244,63,94,0.9)] animate-pulse">🎈</span>
+                </h1>
+                <p className="font-quirky text-xs sm:text-sm font-extrabold text-pink-300/85 mt-1 drop-shadow-sm tracking-wide">
+                  Catch kisses • Stay alive! 💋
+                </p>
+              </div>
+
               {/* Picture: High-Res Balloon Kiss Artwork with Glowing Neon Rose Frame */}
               <KissBalloonIcon
                 className="w-36 h-36 sm:w-44 sm:h-44 rounded-[32px] overflow-hidden border-2 border-rose-500/80 shadow-[0_0_40px_rgba(244,63,94,0.65)] ring-2 ring-rose-500/30 mb-8 transition-transform hover:scale-105"
@@ -2044,7 +2060,7 @@ export const KissCoinGame: React.FC = () => {
               {/* BIG PLAY GAME Button */}
               <button
                 type="button"
-                onClick={startGame}
+                onClick={handleStartGameWithAuth}
                 className="group relative w-64 h-[74px] bg-gradient-to-r from-rose-600 via-pink-600 to-rose-500 hover:from-rose-500 hover:to-pink-500 text-white font-black rounded-3xl shadow-[0_0_45px_rgba(244,63,94,0.85)] border border-rose-400/60 active:scale-95 transition-all flex items-center justify-center gap-3.5 select-none cursor-pointer"
               >
                 <div className="w-12 h-12 rounded-2xl bg-white text-rose-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
@@ -2052,7 +2068,7 @@ export const KissCoinGame: React.FC = () => {
                     <path d="M8 5.14v13.72a1 1 0 001.5.86l11-6.86a1 1 0 000-1.72l-11-6.86a1 1 0 00-1.5.86z" />
                   </svg>
                 </div>
-                <span className="text-2xl font-black tracking-wider leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                <span className="font-quirky text-2xl font-black tracking-wider leading-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
                   PLAY GAME
                 </span>
               </button>

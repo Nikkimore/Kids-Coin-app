@@ -61,8 +61,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           console.log('Invalid final payload');
           return null;
         }
-        // Optionally, fetch the user info from your own database
-        const userInfo = await MiniKit.getUserInfo(finalPayload.address);
+
+        let userInfo: { walletAddress: string; username: string; profilePictureUrl: string } = {
+          walletAddress: finalPayload.address,
+          username: '',
+          profilePictureUrl: '',
+        };
+
+        try {
+          const fetched = await MiniKit.getUserInfo(finalPayload.address);
+          if (fetched) {
+            userInfo = {
+              walletAddress: fetched.walletAddress || finalPayload.address,
+              username: fetched.username || '',
+              profilePictureUrl: fetched.profilePictureUrl || '',
+            };
+          }
+        } catch (err) {
+          console.warn('MiniKit.getUserInfo lookup skipped:', err);
+        }
 
         return {
           id: finalPayload.address,
@@ -85,9 +102,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     session: async ({ session, token }) => {
       if (token.userId) {
         session.user.id = token.userId as string;
-        session.user.walletAddress = token.address as string;
-        session.user.username = token.username as string;
-        session.user.profilePictureUrl = token.profilePictureUrl as string;
+        session.user.walletAddress = (token.walletAddress || token.userId) as string;
+        session.user.username = (token.username || '') as string;
+        session.user.profilePictureUrl = (token.profilePictureUrl || '') as string;
       }
 
       return session;

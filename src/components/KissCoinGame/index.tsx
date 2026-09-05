@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { MiniKit } from '@worldcoin/minikit-js';
 import { Tokens, tokenToDecimals } from '@worldcoin/minikit-js/commands';
 import { playKissSoundEffect } from './kissAudio';
+import { WalletVerification } from '@/components/WalletVerification';
 
 interface Particle {
   x: number;
@@ -1190,32 +1191,64 @@ export const KissCoinGame: React.FC = () => {
       }
 
       ctx.save();
+      // True Pitch-Black OLED Dark Canvas (#000000) with deep neon nebula horizon
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, width, height);
+
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, '#38BDF8');   // Vibrant Cyan Sky
-      bgGrad.addColorStop(0.35, '#7DD3FC'); // Bright Daytime Sky
-      bgGrad.addColorStop(0.68, '#FDE047'); // Warm Golden Sunlight
-      bgGrad.addColorStop(0.85, '#F472B6'); // Soft Pink Twilight
-      bgGrad.addColorStop(1, '#FB7185');    // Warm Sunset Rose Horizon
+      bgGrad.addColorStop(0, '#000000');
+      bgGrad.addColorStop(0.55, '#030107');
+      bgGrad.addColorStop(0.82, '#120419');
+      bgGrad.addColorStop(1, '#220619');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
-      // Soft drifting cartoon clouds in the sky
-      const cloudTime = Date.now() * 0.001;
-      const clouds = [
-        { x: ((cloudTime * 12 + 40) % (width + 140)) - 70, y: 50, r: 24, alpha: 0.6 },
-        { x: ((cloudTime * 8 + 190) % (width + 160)) - 80, y: 115, r: 30, alpha: 0.5 },
-        { x: ((cloudTime * 14 + 310) % (width + 130)) - 65, y: 180, r: 22, alpha: 0.55 },
-        { x: ((cloudTime * 10 + 100) % (width + 150)) - 75, y: 250, r: 26, alpha: 0.45 },
+      // Sparkling Twinkling Stars across pitch-black OLED night sky
+      const starTime = Date.now() * 0.002;
+      const stars = [
+        { x: width * 0.08, y: height * 0.06, r: 1.6, phase: 0 },
+        { x: width * 0.22, y: height * 0.16, r: 1.2, phase: 1.2 },
+        { x: width * 0.38, y: height * 0.08, r: 2.0, phase: 2.5 },
+        { x: width * 0.54, y: height * 0.04, r: 1.4, phase: 3.1 },
+        { x: width * 0.72, y: height * 0.12, r: 1.8, phase: 0.8 },
+        { x: width * 0.88, y: height * 0.07, r: 1.3, phase: 4.2 },
+        { x: width * 0.15, y: height * 0.25, r: 1.6, phase: 1.9 },
+        { x: width * 0.48, y: height * 0.20, r: 1.4, phase: 2.8 },
+        { x: width * 0.82, y: height * 0.24, r: 2.2, phase: 3.7 },
+        { x: width * 0.30, y: height * 0.35, r: 1.5, phase: 0.5 },
+        { x: width * 0.68, y: height * 0.32, r: 1.7, phase: 2.1 },
+        { x: width * 0.92, y: height * 0.38, r: 1.3, phase: 4.8 },
       ];
 
-      for (const cloud of clouds) {
-        ctx.fillStyle = `rgba(255, 255, 255, ${cloud.alpha})`;
+      for (const star of stars) {
+        const twinkle = 0.35 + 0.65 * Math.sin(starTime + star.phase);
+        ctx.fillStyle = `rgba(255, 255, 255, ${twinkle})`;
         ctx.beginPath();
-        ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2);
-        ctx.arc(cloud.x + cloud.r * 0.65, cloud.y - cloud.r * 0.25, cloud.r * 0.75, 0, Math.PI * 2);
-        ctx.arc(cloud.x - cloud.r * 0.65, cloud.y - cloud.r * 0.2, cloud.r * 0.7, 0, Math.PI * 2);
-        ctx.arc(cloud.x + cloud.r * 1.1, cloud.y + cloud.r * 0.15, cloud.r * 0.55, 0, Math.PI * 2);
-        ctx.arc(cloud.x - cloud.r * 1.1, cloud.y + cloud.r * 0.15, cloud.r * 0.55, 0, Math.PI * 2);
+        ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+        ctx.fill();
+        if (twinkle > 0.75) {
+          ctx.fillStyle = `rgba(244, 114, 182, ${twinkle * 0.4})`;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.r * 2.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Soft drifting cosmic stardust / nebula clouds
+      const cloudTime = Date.now() * 0.0008;
+      const nebulae = [
+        { x: ((cloudTime * 10 + 40) % (width + 160)) - 80, y: 70, r: 40, alpha: 0.08, color: '244, 63, 94' },
+        { x: ((cloudTime * 7 + 190) % (width + 180)) - 90, y: 150, r: 46, alpha: 0.06, color: '168, 85, 247' },
+        { x: ((cloudTime * 12 + 310) % (width + 150)) - 75, y: 220, r: 36, alpha: 0.07, color: '236, 72, 153' },
+      ];
+
+      for (const neb of nebulae) {
+        const grad = ctx.createRadialGradient(neb.x, neb.y, 0, neb.x, neb.y, neb.r);
+        grad.addColorStop(0, `rgba(${neb.color}, ${neb.alpha})`);
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(neb.x, neb.y, neb.r, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.restore();
@@ -1883,20 +1916,20 @@ export const KissCoinGame: React.FC = () => {
   }, [highScore, playSound]);
 
   return (
-    <div className="w-full max-w-md mx-auto flex flex-col items-center select-none text-slate-900">
+    <div className="w-full max-w-md mx-auto flex flex-col items-center select-none text-white">
       {/* Top HUD with $KISS Crypto Token Vault & Flight Stats */}
-      <div className="w-full bg-white/85 backdrop-blur-xl rounded-2xl shadow-sm border border-white/90 px-3 py-2 mb-2.5 flex items-center justify-between">
+      <div className="w-full bg-zinc-950/90 backdrop-blur-xl rounded-2xl shadow-[0_4px_25px_rgba(0,0,0,0.8)] border border-zinc-800/90 px-3 py-2.5 mb-2.5 flex items-center justify-between text-white">
         <div className="flex items-center gap-2.5">
           {/* Kiss Coins Badge: Significantly enlarged, glossy squircle */}
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-100 via-rose-50 to-white border-2 border-rose-300 shadow-sm flex items-center justify-center shrink-0 ring-2 ring-pink-100/70">
-              <BalloonKissIcon size={28} />
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-950/90 via-pink-900/60 to-zinc-900 border-2 border-rose-500/80 shadow-[0_0_16px_rgba(244,63,94,0.5)] flex items-center justify-center shrink-0 ring-2 ring-rose-500/30">
+              <BalloonKissIcon size={30} />
             </div>
             <div>
-              <div className="text-[9.5px] text-pink-700 font-black uppercase tracking-wider leading-none mb-0.5">
+              <div className="text-[10px] text-rose-400 font-black uppercase tracking-wider leading-none mb-1">
                 Kiss Coins
               </div>
-              <div className="text-base font-black text-rose-600 leading-none">
+              <div className="text-lg font-black text-white leading-none drop-shadow-[0_0_8px_rgba(244,63,94,0.7)]">
                 {totalKissTokens}
               </div>
             </div>
@@ -1904,15 +1937,15 @@ export const KissCoinGame: React.FC = () => {
 
           {/* User Highest Score (shown if player has a previous score or on game over) */}
           {(highScore > 0 || gameState === 'gameover') && (
-            <div className="flex items-center gap-2 pl-2.5 border-l border-pink-200/60 animate-fade-in" title={`Best Score: ${highScore}`}>
-              <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-100 via-yellow-50 to-white border-2 border-amber-300 shadow-sm flex items-center justify-center text-base shrink-0 ring-2 ring-amber-100/70">
+            <div className="flex items-center gap-2 pl-2.5 border-l border-zinc-800 animate-fade-in" title={`Best Score: ${highScore}`}>
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-950/90 via-yellow-900/50 to-zinc-900 border-2 border-amber-500/80 shadow-[0_0_14px_rgba(245,158,11,0.4)] flex items-center justify-center text-lg shrink-0 ring-2 ring-amber-500/30">
                 🏆
               </div>
               <div>
-                <div className="text-[9.5px] text-amber-800 font-black uppercase tracking-wider leading-none mb-0.5">
+                <div className="text-[10px] text-amber-400 font-black uppercase tracking-wider leading-none mb-1">
                   Best Score
                 </div>
-                <div className="text-base font-black text-amber-600 leading-none">
+                <div className="text-lg font-black text-amber-300 leading-none">
                   {highScore}
                 </div>
               </div>
@@ -1922,26 +1955,26 @@ export const KissCoinGame: React.FC = () => {
 
         {(gameState === 'playing' || gameState === 'paused') && (
           <div className="flex items-center gap-2 animate-fade-in">
-            <div className="text-center bg-white/70 rounded-xl px-2 py-1 border border-pink-100 shadow-2xs">
-              <div className="text-[8px] text-slate-500 font-black uppercase tracking-wider leading-none mb-0.5">Score</div>
-              <div className="text-sm font-black text-rose-600 leading-none">
+            <div className="text-center bg-zinc-900/90 rounded-xl px-2.5 py-1 border border-zinc-800 shadow-inner">
+              <div className="text-[8px] text-zinc-400 font-black uppercase tracking-wider leading-none mb-0.5">Score</div>
+              <div className="text-sm font-black text-rose-400 leading-none">
                 {heartsCaught}
               </div>
             </div>
 
-            <div className="text-center bg-white/70 rounded-xl px-2 py-1 border border-pink-100 shadow-2xs">
-              <div className="text-[8px] text-slate-500 font-black uppercase tracking-wider leading-none mb-0.5">Kisses</div>
-              <div className="text-sm font-black text-pink-600 flex items-center justify-center gap-0.5 leading-none">
+            <div className="text-center bg-zinc-900/90 rounded-xl px-2.5 py-1 border border-zinc-800 shadow-inner">
+              <div className="text-[8px] text-zinc-400 font-black uppercase tracking-wider leading-none mb-0.5">Kisses</div>
+              <div className="text-sm font-black text-pink-400 flex items-center justify-center gap-0.5 leading-none">
                 💋 {kissesCaught}
               </div>
             </div>
 
-            <div className="flex gap-0.5 items-center bg-white/70 rounded-xl px-1.5 py-1 border border-pink-100 shadow-2xs" title="Lives (Yellow Hearts Keep You Alive!)">
+            <div className="flex gap-0.5 items-center bg-zinc-900/90 rounded-xl px-2 py-1 border border-zinc-800 shadow-inner" title="Lives (Yellow Hearts Keep You Alive!)">
               {[1, 2, 3].map((heartIndex) => (
                 <span
                   key={heartIndex}
                   className={`text-sm transition-all duration-200 ${
-                    heartIndex <= lives ? 'scale-100 filter drop-shadow-[0_0_5px_rgba(245,158,11,0.8)]' : 'scale-75 opacity-20 grayscale'
+                    heartIndex <= lives ? 'scale-100 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.9)]' : 'scale-75 opacity-20 grayscale'
                   }`}
                 >
                   💛
@@ -1954,13 +1987,13 @@ export const KissCoinGame: React.FC = () => {
         <button
           type="button"
           onClick={() => setSoundEnabled(!soundEnabled)}
-          className="w-8 h-8 rounded-full bg-white/80 hover:bg-white border border-pink-200/80 text-slate-700 flex items-center justify-center transition-all active:scale-95 shadow-xs shrink-0 ml-1 cursor-pointer"
+          className="w-8 h-8 rounded-full bg-zinc-900 hover:bg-zinc-850 border border-zinc-700/80 text-zinc-300 flex items-center justify-center transition-all active:scale-95 shadow-xs shrink-0 ml-1 cursor-pointer"
           title={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
           aria-label={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
         >
           {soundEnabled ? (
             <svg
-              className="w-4 h-4 text-slate-700"
+              className="w-4 h-4 text-zinc-200"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -1974,7 +2007,7 @@ export const KissCoinGame: React.FC = () => {
             </svg>
           ) : (
             <svg
-              className="w-4 h-4 text-slate-400"
+              className="w-4 h-4 text-zinc-500"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -1990,50 +2023,53 @@ export const KissCoinGame: React.FC = () => {
         </button>
       </div>
 
-      <div className="relative w-full aspect-[4/5] max-h-[530px] rounded-[36px] overflow-hidden border-4 border-white/85 shadow-[0_20px_50px_rgba(244,63,94,0.3)] bg-gradient-to-b from-sky-300 to-rose-200 ring-1 ring-pink-200/60">
+      <div className="relative w-full aspect-[4/5] max-h-[530px] rounded-[36px] overflow-hidden border-2 border-zinc-800 shadow-[0_0_50px_rgba(244,63,94,0.25)] bg-black ring-1 ring-rose-500/20">
         <canvas ref={canvasRef} className="w-full h-full block cursor-grab active:cursor-grabbing touch-none" />
 
-        {/* Start / Idle Screen: Translucent Glassmorphism with BIG Play Game Icon */}
+        {/* Start / Idle Screen: Translucent Pitch-Black Glassmorphism with BIG Play Game Icon & World ID Sign-In */}
         {gameState === 'idle' && (
-          <div className="absolute inset-0 bg-slate-900/15 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center animate-fade-in text-slate-900 z-20">
-            <div className="w-full max-w-[310px] bg-white/85 backdrop-blur-xl rounded-[32px] border-2 border-white/95 shadow-[0_20px_50px_rgba(244,63,94,0.25)] p-5 flex flex-col items-center text-center">
+          <div className="absolute inset-0 bg-black/85 backdrop-blur-xl flex flex-col items-center justify-center p-4 text-center animate-fade-in text-white z-20">
+            <div className="w-full max-w-[320px] bg-zinc-950/95 backdrop-blur-2xl rounded-[32px] border border-zinc-800 shadow-[0_0_60px_rgba(244,63,94,0.35)] p-5 flex flex-col items-center text-center">
               
-              {/* Balloon Floating Icon */}
-              <KissBalloonIcon className="w-22 h-22 mb-2 shadow-[0_12px_28px_rgba(244,63,94,0.35)]" size={88} />
+              {/* Balloon Floating Icon with neon glow */}
+              <KissBalloonIcon className="w-20 h-20 mb-2 drop-shadow-[0_0_25px_rgba(244,63,94,0.6)]" size={80} />
               
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-pink-500 to-amber-500 tracking-tight mb-1">
+              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-400 to-amber-300 tracking-tight mb-1 drop-shadow-[0_0_14px_rgba(244,63,94,0.5)]">
                 Balloon Kiss
               </h2>
-              <p className="text-xs font-bold text-slate-500 mb-4">
+              <p className="text-xs font-bold text-zinc-400 mb-3">
                 Catch kisses & stay alive! 💋🎈
               </p>
 
-              {/* BIG PLAY GAME BUTTON / ICON (User Requested!) */}
+              {/* WORLD ID WALLET VERIFICATION SIGN-IN */}
+              <WalletVerification mode="card" />
+
+              {/* BIG PLAY GAME BUTTON / ICON (High-Contrast Neon Gradient) */}
               <button
                 type="button"
                 onClick={startGame}
-                className="group relative w-full max-w-[260px] h-[66px] bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:from-rose-600 hover:to-pink-600 text-white font-black rounded-3xl shadow-[0_14px_34px_rgba(244,63,94,0.55)] border-2 border-white/90 active:scale-95 transition-all flex items-center justify-center gap-3.5 mb-3.5 select-none cursor-pointer"
+                className="group relative w-full max-w-[270px] h-[72px] bg-gradient-to-r from-rose-600 via-pink-600 to-rose-500 hover:from-rose-500 hover:to-pink-500 text-white font-black rounded-3xl shadow-[0_0_35px_rgba(244,63,94,0.75)] border border-rose-400/60 active:scale-95 transition-all flex items-center justify-center gap-3.5 mb-3 select-none cursor-pointer"
               >
-                <div className="w-12 h-12 rounded-2xl bg-white text-rose-500 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+                <div className="w-12 h-12 rounded-2xl bg-white text-rose-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                   <svg className="w-6 h-6 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5.14v13.72a1 1 0 001.5.86l11-6.86a1 1 0 000-1.72l-11-6.86a1 1 0 00-1.5.86z" />
                   </svg>
                 </div>
                 <div className="flex flex-col text-left">
-                  <span className="text-lg font-black tracking-wide leading-tight">PLAY GAME</span>
-                  <span className="text-[10px] font-extrabold text-pink-100 uppercase tracking-wider">Tap to Fly 🎈</span>
+                  <span className="text-xl font-black tracking-wide leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]">PLAY GAME</span>
+                  <span className="text-[10.5px] font-extrabold text-pink-200 uppercase tracking-wider">Tap to Fly 🎈</span>
                 </div>
               </button>
 
               {/* Active Sky Banner Minimal Pill */}
-              <div className="w-full bg-gradient-to-r from-amber-50/90 to-pink-50/90 border border-amber-200/80 rounded-2xl py-2 px-3 flex items-center justify-between gap-2 shadow-2xs">
+              <div className="w-full bg-zinc-900/90 border border-zinc-800/80 rounded-2xl py-2 px-3 flex items-center justify-between gap-2 shadow-inner">
                 <div className="flex items-center gap-2 overflow-hidden min-w-0 text-left">
                   <span className="text-base shrink-0">{bannerIsSponsor ? '💎' : '👑'}</span>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-xs font-bold text-slate-800 truncate">
+                    <span className="text-xs font-bold text-zinc-200 truncate">
                       &quot;{bannerMessage}&quot;
                     </span>
-                    <span className="text-[9.5px] font-semibold text-slate-400">
+                    <span className="text-[9.5px] font-semibold text-zinc-500">
                       {bannerAuthor}
                     </span>
                   </div>
@@ -2044,7 +2080,7 @@ export const KissCoinGame: React.FC = () => {
                     setSponsorMessage('');
                     setShowWldModal(true);
                   }}
-                  className="px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-[10.5px] font-black rounded-xl shrink-0 transition-transform active:scale-95 shadow-xs flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-[10.5px] font-black rounded-xl shrink-0 transition-transform active:scale-95 shadow-[0_0_12px_rgba(245,158,11,0.4)] flex items-center gap-1 cursor-pointer"
                   title="VIP 1-Hour Guaranteed Banner for 1 WLD"
                 >
                   <span>1 WLD</span>
@@ -2058,27 +2094,27 @@ export const KissCoinGame: React.FC = () => {
 
         {/* Game Over Screen: Translucent Frosted Glass & Polished Results */}
         {gameState === 'gameover' && (
-          <div className="absolute inset-0 bg-slate-900/15 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center animate-fade-in text-slate-900 z-20">
-            <div className="w-full max-w-[310px] bg-white/90 backdrop-blur-xl rounded-[32px] border-2 border-white/95 shadow-[0_20px_50px_rgba(244,63,94,0.25)] p-5 flex flex-col items-center text-center">
-              <div className="text-4xl mb-1 filter drop-shadow-sm">
+          <div className="absolute inset-0 bg-black/85 backdrop-blur-xl flex flex-col items-center justify-center p-4 text-center animate-fade-in text-white z-20">
+            <div className="w-full max-w-[320px] bg-zinc-950/95 backdrop-blur-2xl rounded-[32px] border border-zinc-800 shadow-[0_0_60px_rgba(244,63,94,0.35)] p-5 flex flex-col items-center text-center">
+              <div className="text-4xl mb-1 filter drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">
                 {isNewRecord ? '👑' : '🎈'}
               </div>
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-600 via-pink-500 to-amber-500 mb-3">
+              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-400 to-amber-300 mb-3 drop-shadow-[0_0_12px_rgba(244,63,94,0.5)]">
                 {isNewRecord ? 'New Record!' : 'Game Over'}
               </h2>
 
               {/* Score & Best */}
-              <div className="flex items-center justify-center gap-6 mb-4 bg-gradient-to-r from-pink-50 to-rose-50 border border-pink-200/80 rounded-2xl py-3 px-6 w-full shadow-2xs">
+              <div className="flex items-center justify-center gap-6 mb-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl py-3 px-6 w-full shadow-inner">
                 <div className="text-center">
-                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Score</div>
-                  <div className="text-2xl font-black text-pink-600 leading-tight">
+                  <div className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Score</div>
+                  <div className="text-2xl font-black text-rose-400 leading-tight">
                     {lastFlightScore}
                   </div>
                 </div>
-                <div className="w-px h-8 bg-pink-300/60" />
+                <div className="w-px h-8 bg-zinc-750" />
                 <div className="text-center">
-                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Best Score</div>
-                  <div className="text-2xl font-black text-amber-600 leading-tight">
+                  <div className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Best Score</div>
+                  <div className="text-2xl font-black text-amber-400 leading-tight">
                     {highScore}
                   </div>
                 </div>
@@ -2089,18 +2125,18 @@ export const KissCoinGame: React.FC = () => {
                 <div className="w-full mb-3.5">
                   {bannerSaved ? (
                     isBannerQueued ? (
-                      <div className="text-[11px] font-bold text-amber-900 bg-amber-50 border border-amber-200 py-2 px-3 rounded-xl text-left leading-tight">
-                        <span className="font-black text-amber-800">🛡️ Record Broken!</span> VIP shield active, your message &quot;{newBannerText.trim() || 'Kiss the sky! 💋'}&quot; is queued!
+                      <div className="text-[11px] font-bold text-amber-300 bg-amber-950/60 border border-amber-700/80 py-2 px-3 rounded-xl text-left leading-tight">
+                        <span className="font-black text-amber-400">🛡️ Record Broken!</span> VIP shield active, your message &quot;{newBannerText.trim() || 'Kiss the sky! 💋'}&quot; is queued!
                       </div>
                     ) : (
-                      <div className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 py-2 px-3 rounded-xl">
+                      <div className="text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-700/80 py-2 px-3 rounded-xl">
                         ✓ Flying on banner: &quot;{bannerMessage}&quot;
                       </div>
                     )
                   ) : (
                     <form onSubmit={handleSaveBanner} className="flex flex-col gap-1.5">
                       {isBannerShielded && bannerRemainingSeconds > 0 && (
-                        <div className="text-[10px] font-semibold text-amber-700 bg-amber-50/80 border border-amber-200 rounded-lg px-2 py-1 text-left flex items-center gap-1">
+                        <div className="text-[10px] font-semibold text-amber-300 bg-amber-950/70 border border-amber-700/80 rounded-lg px-2 py-1 text-left flex items-center gap-1">
                           <span>🛡️</span>
                           <span>1-Hr VIP Shield active ({Math.floor(bannerRemainingSeconds / 60)}m left) — your banner will queue to fly next!</span>
                         </div>
@@ -2112,11 +2148,11 @@ export const KissCoinGame: React.FC = () => {
                           value={newBannerText}
                           onChange={(e) => setNewBannerText(e.target.value)}
                           placeholder="Your banner message..."
-                          className="flex-1 px-3 py-2 text-xs rounded-xl border border-amber-300 bg-white font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          className="flex-1 px-3 py-2 text-xs rounded-xl border border-zinc-700 bg-zinc-900 font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-rose-500"
                         />
                         <button
                           type="submit"
-                          className="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-black rounded-xl shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
+                          className="px-3 py-2 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-xs font-black rounded-xl shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
                         >
                           Fly 👑
                         </button>
@@ -2130,9 +2166,9 @@ export const KissCoinGame: React.FC = () => {
               <button
                 type="button"
                 onClick={startGame}
-                className="group relative w-full max-w-[260px] h-[58px] bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:from-rose-600 hover:to-pink-600 text-white font-black rounded-3xl shadow-[0_12px_32px_rgba(244,63,94,0.5)] border-2 border-white/90 active:scale-95 transition-all flex items-center justify-center gap-3 mb-2.5 select-none cursor-pointer"
+                className="group relative w-full max-w-[270px] h-[60px] bg-gradient-to-r from-rose-600 via-pink-600 to-rose-500 hover:from-rose-500 hover:to-pink-500 text-white font-black rounded-3xl shadow-[0_0_30px_rgba(244,63,94,0.7)] border border-rose-400/60 active:scale-95 transition-all flex items-center justify-center gap-3 mb-2.5 select-none cursor-pointer"
               >
-                <div className="w-9 h-9 rounded-xl bg-white text-rose-500 flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
+                <div className="w-9 h-9 rounded-xl bg-white text-rose-600 flex items-center justify-center shadow-xs group-hover:scale-110 transition-transform">
                   <svg className="w-5 h-5 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5.14v13.72a1 1 0 001.5.86l11-6.86a1 1 0 000-1.72l-11-6.86a1 1 0 00-1.5.86z" />
                   </svg>
@@ -2147,7 +2183,7 @@ export const KissCoinGame: React.FC = () => {
                   setSponsorMessage('');
                   setShowWldModal(true);
                 }}
-                className="w-full max-w-[260px] py-2.5 bg-gradient-to-r from-amber-400 via-amber-500 to-rose-500 hover:from-amber-500 hover:to-rose-600 text-white font-extrabold text-[11.5px] rounded-2xl shadow-sm active:scale-95 transition-all flex items-center justify-center gap-1.5 border border-amber-300 cursor-pointer"
+                className="w-full max-w-[270px] py-2.5 bg-gradient-to-r from-amber-600 to-rose-600 text-white font-extrabold text-xs rounded-2xl shadow-[0_0_16px_rgba(245,158,11,0.3)] active:scale-95 transition-all flex items-center justify-center gap-1.5 border border-amber-500/60 cursor-pointer"
                 title="Leave a message on the balloon for 1 hour — 1 WLD"
               >
                 <span className="text-sm">💎</span>
@@ -2159,32 +2195,32 @@ export const KissCoinGame: React.FC = () => {
 
         {/* VIP 1 WLD Sponsor Banner Override Modal */}
         {showWldModal && (
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-            <div className="w-full max-w-xs bg-gradient-to-b from-amber-50 via-white to-pink-50 border-2 border-amber-400 rounded-3xl p-4 shadow-2xl text-left text-slate-900">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="w-full max-w-xs bg-zinc-950 border-2 border-amber-500/80 rounded-3xl p-4 shadow-[0_0_50px_rgba(245,158,11,0.3)] text-left text-white">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center text-lg shadow-xs">
+                  <div className="w-8 h-8 rounded-xl bg-amber-950/80 border border-amber-500/60 flex items-center justify-center text-lg shadow-xs">
                     💎
                   </div>
                   <div>
-                    <div className="text-xs font-black text-amber-900 uppercase tracking-wider leading-tight">
+                    <div className="text-xs font-black text-amber-400 uppercase tracking-wider leading-tight">
                       VIP Sky Banner
                     </div>
-                    <div className="text-[10px] font-bold text-amber-600">
+                    <div className="text-[10px] font-bold text-zinc-400">
                       Guaranteed 1-Hour Shield • 1 WLD
                     </div>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowWldModal(false)}
-                  className="w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-xs font-bold transition-colors"
+                  className="w-6 h-6 rounded-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 flex items-center justify-center text-xs font-bold transition-colors cursor-pointer"
                 >
                   ✕
                 </button>
               </div>
 
               {/* Clear Explanation Card */}
-              <div className="bg-amber-100/70 border border-amber-200/90 rounded-2xl p-2.5 mb-3 text-[11px] text-amber-950 space-y-1.5 leading-snug">
+              <div className="bg-zinc-900/90 border border-amber-500/30 rounded-2xl p-2.5 mb-3 text-[11px] text-zinc-300 space-y-1.5 leading-snug">
                 <div className="flex items-start gap-1.5">
                   <span className="text-xs shrink-0 mt-0.5">⏱️</span>
                   <span><strong>1-Hour Guaranteed Flight:</strong> Your custom message flies across the hot air balloon banner for 60 minutes for every player in the world.</span>
@@ -2202,8 +2238,8 @@ export const KissCoinGame: React.FC = () => {
               <form onSubmit={handlePayWldOverride} className="flex flex-col gap-2 mb-1">
                 <div>
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-extrabold text-slate-600 uppercase">Your VIP Message</label>
-                    <span className="text-[9px] font-bold text-slate-400">{sponsorMessage.length}/65</span>
+                    <label className="text-[10px] font-extrabold text-zinc-400 uppercase">Your VIP Message</label>
+                    <span className="text-[9px] font-bold text-zinc-500">{sponsorMessage.length}/65</span>
                   </div>
                   <input
                     type="text"
@@ -2211,25 +2247,25 @@ export const KissCoinGame: React.FC = () => {
                     value={sponsorMessage}
                     onChange={(e) => setSponsorMessage(e.target.value)}
                     placeholder="Your VIP message (e.g. Kiss the sky! 💋)"
-                    className="w-full mt-0.5 px-3 py-2 text-xs rounded-xl border border-amber-300 bg-white font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-inner"
+                    className="w-full mt-0.5 px-3 py-2 text-xs rounded-xl border border-zinc-700 bg-zinc-900 font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-inner"
                   />
                 </div>
 
-                <div className="bg-white/90 border border-amber-200 rounded-xl p-2 text-[10.5px] text-slate-700 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 font-bold text-amber-900">
+                <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-2 text-[10.5px] text-zinc-300 flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 font-bold text-amber-400">
                     <span className="text-base">🪙</span> Cost: 1.0 WLD
                   </span>
-                  <span className="text-[10px] text-amber-700 font-bold bg-amber-100/80 px-1.5 py-0.5 rounded-md">60 Min Shield</span>
+                  <span className="text-[10px] text-amber-400 font-bold bg-amber-950/80 border border-amber-600/50 px-1.5 py-0.5 rounded-md">60 Min Shield</span>
                 </div>
 
                 {wldPayState === 'success' && (
-                  <div className="bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold py-2 px-3 rounded-xl text-center">
+                  <div className="bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold py-2 px-3 rounded-xl text-center">
                     ✓ 1 WLD Approved! 1-Hour VIP Shield Active 💎
                   </div>
                 )}
 
                 {wldPayState === 'failed' && (
-                  <div className="bg-rose-100 border border-rose-300 text-rose-900 text-xs font-bold py-2 px-3 rounded-xl text-center">
+                  <div className="bg-rose-950/80 border border-rose-500 text-rose-300 text-xs font-bold py-2 px-3 rounded-xl text-center">
                     Payment cancelled or failed. Please try again.
                   </div>
                 )}
@@ -2237,7 +2273,7 @@ export const KissCoinGame: React.FC = () => {
                 <button
                   type="submit"
                   disabled={wldPayState === 'pending'}
-                  className="w-full py-2.5 bg-gradient-to-r from-amber-500 via-rose-500 to-pink-600 hover:from-amber-600 hover:to-rose-600 text-white font-black text-xs rounded-xl shadow-md transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center gap-1.5"
+                  className="w-full py-2.5 bg-gradient-to-r from-amber-500 via-rose-500 to-pink-600 hover:from-amber-600 hover:to-rose-600 text-white font-black text-xs rounded-xl shadow-md transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   {wldPayState === 'pending' ? 'Processing 1 WLD...' : 'Pay 1 WLD (Fly for 1 Hour 💎)'}
                 </button>
@@ -2247,7 +2283,7 @@ export const KissCoinGame: React.FC = () => {
         )}
       </div>
 
-      <div className="mt-2.5 text-center text-xs font-medium text-slate-500">
+      <div className="mt-2.5 text-center text-xs font-medium text-zinc-500">
         ❤️ Catch Hearts = Score • 💔 Miss Heart = -1 Life (3 lives) • 💛 Yellow = Restore Life • 💋 Kisses = $KISS coins
       </div>
     </div>

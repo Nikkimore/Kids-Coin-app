@@ -1,42 +1,6 @@
-import { auth } from '@/auth';
-import { Page } from '@/components/PageLayout';
-import { KissCoinGame } from '@/components/KissCoinGame';
-import { Marble, TopBar } from '@worldcoin/mini-apps-ui-kit-react';
-import Image from 'next/image';
+import { redirect } from 'next/navigation';
 
-export default async function Home() {
-  const session = await auth();
-
-  return (
-    <>
-      <Page.Header className="p-0">
-        <TopBar
-          title="Balloon Kiss"
-          startAdornment={
-            <div className="w-9 h-9 rounded-2xl overflow-hidden border border-rose-200 shadow-sm shrink-0">
-              <Image
-                src="/kiss-balloon-icon-v2.jpg"
-                alt="Balloon Kiss"
-                width={36}
-                height={36}
-                className="w-full h-full object-cover"
-                priority
-              />
-            </div>
-          }
-          endAdornment={
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-semibold capitalize">
-                {session?.user?.username}
-              </p>
-              <Marble src={session?.user?.profilePictureUrl} className="w-12" />
-            </div>
-          }
-        />
-      </Page.Header>
-      <Page.Main className="flex flex-col items-center justify-start gap-4 mb-16">
-        <KissCoinGame />
-      </Page.Main>
-    </>
-  );
+export default function Home() {
+  redirect('/');
 }
+

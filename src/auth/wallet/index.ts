@@ -13,18 +13,37 @@ import { getNewNonces } from './server-helpers';
  * @throws {Error} If wallet authentication fails at any step.
  */
 export const walletAuth = async () => {
+  if (!MiniKit.isInstalled()) {
+    console.warn('MiniKit is not installed (outside World App).');
+    throw new Error('Please open this mini app inside World App to verify your wallet.');
+  }
+
   const { nonce, signedNonce } = await getNewNonces();
 
   const result = await MiniKit.walletAuth({
     nonce,
     expirationTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     notBefore: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    statement: `Authenticate (${crypto.randomUUID().replace(/-/g, '')}).`,
+    statement: `Sign in to Balloon Kiss on World App (${crypto.randomUUID().replace(/-/g, '').slice(0, 8)}).`,
   });
-  console.log('Result', result);
 
-  await signIn('credentials', {
-    redirectTo: '/home',
+  console.log('MiniKit walletAuth result:', result);
+
+  if (!result || !result.data || !result.data.address) {
+    throw new Error('Wallet verification was canceled or failed.');
+  }
+
+  try {
+    await MiniKit.sendHapticFeedback({
+      hapticsType: 'notification',
+      style: 'success',
+    });
+  } catch {
+    // Haptics optional
+  }
+
+  return await signIn('credentials', {
+    redirectTo: '/',
     nonce,
     signedNonce,
     finalPayloadJson: JSON.stringify({
@@ -35,3 +54,4 @@ export const walletAuth = async () => {
     }),
   });
 };
+

@@ -6,7 +6,15 @@ import { AuthButton } from '@/components/AuthButton';
 import Image from 'next/image';
 
 export default async function Home() {
-  const session = await auth();
+  let session = null;
+  try {
+    session = await auth();
+    if (!session || typeof session !== 'object' || !('user' in session)) {
+      session = null;
+    }
+  } catch {
+    session = null;
+  }
 
   return (
     <Page>

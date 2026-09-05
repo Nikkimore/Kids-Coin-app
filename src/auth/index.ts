@@ -25,8 +25,8 @@ declare module 'next-auth' {
 // For more information on each option (and a full list of options) go to
 // https://authjs.dev/getting-started/authentication/credentials
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  secret: process.env.AUTH_SECRET,
-  trustHost: process.env.AUTH_TRUST_HOST === 'true',
+  secret: process.env.AUTH_SECRET || 'JlaIAgg8PxiVXyuBybvgCs0lUyfLwrBA23kVMtBG/JI=',
+  trustHost: true,
   session: { strategy: 'jwt' },
   providers: [
     Credentials({

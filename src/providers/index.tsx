@@ -32,10 +32,13 @@ export default function ClientProviders({
   children,
   session,
 }: ClientProvidersProps) {
+  const safeSession =
+    session && typeof session === 'object' && 'user' in session ? session : null;
+
   return (
     <ErudaProvider>
       <MiniKitProvider props={{ appId: process.env.NEXT_PUBLIC_APP_ID || 'app_50930aa723f8df87d769869a70d29693' }}>
-        <SessionProvider session={session}>{children}</SessionProvider>
+        <SessionProvider session={safeSession}>{children}</SessionProvider>
       </MiniKitProvider>
     </ErudaProvider>
   );

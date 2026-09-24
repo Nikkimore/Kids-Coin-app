@@ -139,6 +139,7 @@ export const KissCoinGame: React.FC = () => {
     balloonBursted: false,
     screenShake: 0,
     keysPressed: new Set<string>(),
+    highScore: 0,
     bannerMessage: 'Kiss the sky! 💋',
     bannerAuthor: 'Top Pilot',
     bannerIsSponsor: false,
@@ -160,6 +161,7 @@ export const KissCoinGame: React.FC = () => {
   stateRef.current.kissesCaught = kissesCaught;
   stateRef.current.lives = lives;
   stateRef.current.streak = streak;
+  stateRef.current.highScore = highScore;
   stateRef.current.soundEnabled = soundEnabled;
   stateRef.current.bannerMessage = bannerMessage;
   stateRef.current.bannerAuthor = bannerAuthor;
@@ -314,6 +316,7 @@ export const KissCoinGame: React.FC = () => {
           }
           if (typeof data?.highScore === 'number') {
             setHighScore(data.highScore);
+            stateRef.current.highScore = data.highScore;
           }
           if (typeof data?.isShielded === 'boolean') {
             setIsBannerShielded(data.isShielded);
@@ -329,7 +332,13 @@ export const KissCoinGame: React.FC = () => {
 
       try {
         const saved = localStorage.getItem('kiss_coin_high_score');
-        if (saved) setHighScore(parseInt(saved, 10));
+        if (saved) {
+          const parsed = parseInt(saved, 10);
+          if (!isNaN(parsed)) {
+            setHighScore(parsed);
+            stateRef.current.highScore = parsed;
+          }
+        }
 
         const savedMsg = localStorage.getItem('kiss_coin_banner_message');
         if (savedMsg) {
@@ -1364,10 +1373,11 @@ export const KissCoinGame: React.FC = () => {
           });
         }
 
-        const isRecord = currentFlightPoints > highScore && currentFlightPoints > 0;
+        const isRecord = currentFlightPoints > 0 && currentFlightPoints > s.highScore;
         setIsNewRecord(isRecord);
         setBannerSaved(false);
         if (isRecord) {
+          s.highScore = currentFlightPoints;
           setNewBannerText('');
           const best = currentFlightPoints;
           setHighScore(best);
@@ -1703,10 +1713,11 @@ export const KissCoinGame: React.FC = () => {
                   });
                 }
 
-                const isRecord = currentFlightPoints > highScore && currentFlightPoints > 0;
+                const isRecord = currentFlightPoints > 0 && currentFlightPoints > s.highScore;
                 setIsNewRecord(isRecord);
                 setBannerSaved(false);
                 if (isRecord) {
+                  s.highScore = currentFlightPoints;
                   setNewBannerText('');
                   const best = currentFlightPoints;
                   setHighScore(best);

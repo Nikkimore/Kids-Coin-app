@@ -1481,77 +1481,26 @@
     let flightDuration = 0;
     let flightTopSpeed = 1.0;
 
-    // Classic Normal Heart drawing helper
+    // Authentic Heart drawing helper (matches the 3 yellow hearts in the lives HUD)
     function drawHeart(c, x, y, size, color, isGolden, wobble = 0) {
       c.save();
       c.translate(x, y);
+      c.rotate(Math.sin(wobble) * 0.18);
 
-      // Gentle natural flutter angle
-      c.rotate(Math.sin(wobble) * 0.12);
-
-      // Soft cute aura
+      // Heart glow aura
       if (isGolden) {
-        c.shadowColor = 'rgba(245, 158, 11, 0.75)';
-        c.shadowBlur = 15;
+        c.shadowColor = 'rgba(245, 158, 11, 0.7)';
+        c.shadowBlur = 14;
       } else {
-        c.shadowColor = 'rgba(255, 46, 99, 0.5)';
+        c.shadowColor = 'rgba(239, 68, 68, 0.55)';
         c.shadowBlur = 12;
       }
 
-      // Classic Normal Heart Scale Factor (Height : Width ~ 1.15 : 1.0)
-      const s = size * 0.85;
-
-      // Vertical Gradient
-      const grad = c.createLinearGradient(0, -s * 1.12, 0, s * 1.15);
-      if (isGolden) {
-        // Golden Life Heart: Sunny cream to amber gold
-        grad.addColorStop(0, '#FEF08A');
-        grad.addColorStop(0.3, '#FBBF24');
-        grad.addColorStop(0.75, '#F59E0B');
-        grad.addColorStop(1, '#D97706');
-      } else {
-        // Red Score Heart: Bright coral to rich ruby crimson
-        grad.addColorStop(0, '#FF5378');
-        grad.addColorStop(0.35, '#FF2E63');
-        grad.addColorStop(0.75, '#E11D48');
-        grad.addColorStop(1, '#9F1239');
-      }
-
-      c.fillStyle = grad;
-      c.beginPath();
-
-      // Classic Normal Heart Path (tall, elegant, iconic normal heart)
-      // 1. Bottom point
-      c.moveTo(0, s * 1.15);
-      // 2. Left flank curve up to left crest
-      c.bezierCurveTo(-s * 0.55, s * 0.48, -s * 1.0, s * 0.08, -s * 1.0, -s * 0.44);
-      // 3. Left lobe top arch
-      c.bezierCurveTo(-s * 1.0, -s * 0.82, -s * 0.76, -s * 1.12, -s * 0.44, -s * 1.12);
-      // 4. Left lobe down into center cleft
-      c.bezierCurveTo(-s * 0.22, -s * 1.12, -s * 0.08, -s * 1.0, 0, -s * 0.85);
-      // 5. Right lobe up from center cleft
-      c.bezierCurveTo(s * 0.08, -s * 1.0, s * 0.22, -s * 1.12, s * 0.44, -s * 1.12);
-      // 6. Right lobe top arch
-      c.bezierCurveTo(s * 0.76, -s * 1.12, s * 1.0, -s * 0.82, s * 1.0, -s * 0.44);
-      // 7. Right flank down to bottom point
-      c.bezierCurveTo(s * 1.0, s * 0.08, s * 0.55, s * 0.48, 0, s * 1.15);
-      c.closePath();
-      c.fill();
-
-      // Clear shadow for crisp gloss highlights
-      c.shadowBlur = 0;
-
-      // Soft Curved Highlight on Left Lobe
-      c.fillStyle = 'rgba(255, 255, 255, 0.65)';
-      c.beginPath();
-      c.ellipse(-s * 0.46, -s * 0.65, s * 0.22, s * 0.11, -0.45, 0, Math.PI * 2);
-      c.fill();
-
-      // Subtle Gleam Dot on Right Lobe
-      c.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      c.beginPath();
-      c.arc(s * 0.48, -s * 0.7, Math.max(1.4, size * 0.08), 0, Math.PI * 2);
-      c.fill();
+      // Render the authentic system heart emoji (matches the 3 yellow hearts in the lives HUD)
+      c.font = `${Math.floor(size * 1.55)}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillText(isGolden ? '💛' : '❤️', 0, 0);
 
       c.restore();
     }

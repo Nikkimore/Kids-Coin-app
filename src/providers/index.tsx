@@ -2,32 +2,14 @@
 import { MiniKitProvider } from '@worldcoin/minikit-js/minikit-provider';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
-import dynamic from 'next/dynamic';
 import type { ReactNode } from 'react';
-
-const ErudaProvider = dynamic(
-  () => import('@/providers/Eruda').then((c) => c.ErudaProvider),
-  { ssr: false },
-);
 
 // Define props for ClientProviders
 interface ClientProvidersProps {
   children: ReactNode;
-  session: Session | null; // Use the appropriate type for session from next-auth
+  session: Session | null;
 }
 
-/**
- * ClientProvider wraps the app with essential context providers.
- *
- * - ErudaProvider:
- *     - Should be used only in development.
- *     - Enables an in-browser console for logging and debugging.
- *
- * - MiniKitProvider:
- *     - Required for MiniKit functionality.
- *
- * This component ensures both providers are available to all child components.
- */
 export default function ClientProviders({
   children,
   session,
@@ -36,10 +18,8 @@ export default function ClientProviders({
     session && typeof session === 'object' && 'user' in session ? session : null;
 
   return (
-    <ErudaProvider>
-      <MiniKitProvider props={{ appId: process.env.NEXT_PUBLIC_APP_ID || 'app_50930aa723f8df87d769869a70d29693' }}>
-        <SessionProvider session={safeSession}>{children}</SessionProvider>
-      </MiniKitProvider>
-    </ErudaProvider>
+    <MiniKitProvider props={{ appId: process.env.NEXT_PUBLIC_APP_ID || 'app_50930aa723f8df87d769869a70d29693' }}>
+      <SessionProvider session={safeSession}>{children}</SessionProvider>
+    </MiniKitProvider>
   );
 }

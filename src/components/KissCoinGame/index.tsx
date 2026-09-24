@@ -1364,7 +1364,7 @@ export const KissCoinGame: React.FC = () => {
           });
         }
 
-        const isRecord = currentFlightPoints > highScore;
+        const isRecord = currentFlightPoints > highScore && currentFlightPoints > 0;
         setIsNewRecord(isRecord);
         setBannerSaved(false);
         if (isRecord) {
@@ -1703,7 +1703,7 @@ export const KissCoinGame: React.FC = () => {
                   });
                 }
 
-                const isRecord = currentFlightPoints > highScore;
+                const isRecord = currentFlightPoints > highScore && currentFlightPoints > 0;
                 setIsNewRecord(isRecord);
                 setBannerSaved(false);
                 if (isRecord) {
@@ -2031,11 +2031,18 @@ export const KissCoinGame: React.FC = () => {
           <div className="absolute inset-0 bg-black/85 backdrop-blur-xl flex flex-col items-center justify-center p-4 text-center animate-fade-in text-white z-20">
             <div className="w-full max-w-[320px] bg-zinc-950/95 backdrop-blur-2xl rounded-[32px] border border-zinc-800 shadow-[0_0_60px_rgba(244,63,94,0.35)] p-5 flex flex-col items-center text-center">
               <div className="text-4xl mb-1 filter drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">
-                {isNewRecord ? '👑' : '🎈'}
+                {isNewRecord ? '🏆' : '🎈'}
               </div>
-              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-400 to-amber-300 mb-3 drop-shadow-[0_0_12px_rgba(244,63,94,0.5)]">
-                {isNewRecord ? 'New Record!' : 'Game Over'}
+              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-rose-400 to-pink-400 mb-1 drop-shadow-[0_0_12px_rgba(244,63,94,0.5)]">
+                {isNewRecord ? 'Congratulations!' : 'Game Over'}
               </h2>
+              {isNewRecord ? (
+                <p className="text-xs font-black text-amber-300 mb-3 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)] px-1 leading-snug">
+                  Now you can leave a message on the banner!
+                </p>
+              ) : (
+                <div className="mb-2" />
+              )}
 
               {/* Score & Best */}
               <div className="flex items-center justify-center gap-6 mb-4 bg-zinc-900/90 border border-zinc-800 rounded-2xl py-3 px-6 w-full shadow-inner">
@@ -2056,11 +2063,16 @@ export const KissCoinGame: React.FC = () => {
 
               {/* IF NEW RECORD: Message composer with 1-hour VIP shield queue support */}
               {isNewRecord && (
-                <div className="w-full mb-3.5">
+                <div className="w-full mb-3.5 bg-gradient-to-b from-amber-950/40 to-zinc-900/90 border border-amber-500/40 rounded-2xl p-3 shadow-inner">
+                  {!bannerSaved && (
+                    <div className="text-[11px] font-extrabold text-amber-300 mb-2 leading-tight text-center">
+                      ✨ Congratulations! Now you can leave a message on the banner:
+                    </div>
+                  )}
                   {bannerSaved ? (
                     isBannerQueued ? (
                       <div className="text-[11px] font-bold text-amber-300 bg-amber-950/60 border border-amber-700/80 py-2 px-3 rounded-xl text-left leading-tight">
-                        <span className="font-black text-amber-400">🛡️ Record Broken!</span> VIP shield active, your message &quot;{newBannerText.trim() || 'Kiss the sky! 💋'}&quot; is queued!
+                        <span className="font-black text-amber-400">🛡️ Record Broken!</span> Active 1-hour flight in progress, your message &quot;{newBannerText.trim() || 'Kiss the sky! 💋'}&quot; will fly next!
                       </div>
                     ) : (
                       <div className="text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-700/80 py-2 px-3 rounded-xl">
@@ -2072,7 +2084,7 @@ export const KissCoinGame: React.FC = () => {
                       {isBannerShielded && bannerRemainingSeconds > 0 && (
                         <div className="text-[10px] font-semibold text-amber-300 bg-amber-950/70 border border-amber-700/80 rounded-lg px-2 py-1 text-left flex items-center gap-1">
                           <span>🛡️</span>
-                          <span>1-Hr VIP Shield active ({Math.floor(bannerRemainingSeconds / 60)}m left) — your banner will queue to fly next!</span>
+                          <span>Active 1-hour flight in progress ({Math.floor(bannerRemainingSeconds / 60)}m left) — your banner will queue to fly next!</span>
                         </div>
                       )}
                       <div className="flex gap-1.5">
@@ -2081,14 +2093,14 @@ export const KissCoinGame: React.FC = () => {
                           maxLength={65}
                           value={newBannerText}
                           onChange={(e) => setNewBannerText(e.target.value)}
-                          placeholder="Your banner message..."
-                          className="flex-1 px-3 py-2 text-xs rounded-xl border border-zinc-700 bg-zinc-900 font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                          placeholder="Your message on the banner..."
+                          className="flex-1 px-3 py-2 text-xs rounded-xl border border-amber-500/50 bg-zinc-950 font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
                         />
                         <button
                           type="submit"
-                          className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-xs font-black rounded-xl shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
+                          className="px-4 py-2 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white text-xs font-black rounded-xl shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
                         >
-                          Send
+                          Send 🎈
                         </button>
                       </div>
                     </form>
@@ -2118,10 +2130,10 @@ export const KissCoinGame: React.FC = () => {
                   setShowWldModal(true);
                 }}
                 className="w-full max-w-[270px] py-2.5 bg-gradient-to-r from-amber-600 to-rose-600 text-white font-extrabold text-xs rounded-2xl shadow-[0_0_16px_rgba(245,158,11,0.3)] active:scale-95 transition-all flex items-center justify-center gap-1.5 border border-amber-500/60 cursor-pointer"
-                title="Leave message on balloon for one hour — 1 WLD"
+                title="Leave message on banner for one hour — 1 WLD"
               >
                 <span className="text-sm">💎</span>
-                <span>Leave message on balloon for one hour — 1 WLD</span>
+                <span>Leave message on banner for one hour — 1 WLD</span>
               </button>
             </div>
           </div>
@@ -2138,7 +2150,7 @@ export const KissCoinGame: React.FC = () => {
                   </div>
                   <div>
                     <div className="text-xs font-black text-amber-400 uppercase tracking-wider leading-tight">
-                      Leave Message on Balloon
+                      Leave Message on Banner
                     </div>
                     <div className="text-[10px] font-bold text-zinc-400">
                       Flies for 1 Hour • 1 WLD

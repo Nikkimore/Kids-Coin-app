@@ -51,6 +51,11 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <html lang="en">
+      <head>
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
+      </head>
       <body className={`${rubik.variable} ${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ClientProviders session={session}>{children}</ClientProviders>
       </body>

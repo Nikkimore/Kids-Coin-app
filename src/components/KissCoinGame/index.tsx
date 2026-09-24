@@ -2110,7 +2110,7 @@ export const KissCoinGame: React.FC = () => {
                 <span className="text-base font-black tracking-wide">Play Again 🎈</span>
               </button>
 
-              {/* 1 WLD Sponsor Button */}
+              {/* 1 WLD Message Button */}
               <button
                 type="button"
                 onClick={() => {
@@ -2118,30 +2118,30 @@ export const KissCoinGame: React.FC = () => {
                   setShowWldModal(true);
                 }}
                 className="w-full max-w-[270px] py-2.5 bg-gradient-to-r from-amber-600 to-rose-600 text-white font-extrabold text-xs rounded-2xl shadow-[0_0_16px_rgba(245,158,11,0.3)] active:scale-95 transition-all flex items-center justify-center gap-1.5 border border-amber-500/60 cursor-pointer"
-                title="Leave a message on the balloon for 1 hour — 1 WLD"
+                title="Leave message on balloon for one hour — 1 WLD"
               >
                 <span className="text-sm">💎</span>
-                <span>Sponsor Balloon for 1 Hour — 1 WLD</span>
+                <span>Leave message on balloon for one hour — 1 WLD</span>
               </button>
             </div>
           </div>
         )}
 
-        {/* VIP 1 WLD Sponsor Banner Override Modal */}
+        {/* 1 WLD Message Override Modal */}
         {showWldModal && (
           <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in">
             <div className="w-full max-w-xs bg-zinc-950 border-2 border-amber-500/80 rounded-3xl p-4 shadow-[0_0_50px_rgba(245,158,11,0.3)] text-left text-white">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-xl bg-amber-950/80 border border-amber-500/60 flex items-center justify-center text-lg shadow-xs">
-                    💎
+                    🎈
                   </div>
                   <div>
                     <div className="text-xs font-black text-amber-400 uppercase tracking-wider leading-tight">
-                      VIP Sky Banner
+                      Leave Message on Balloon
                     </div>
                     <div className="text-[10px] font-bold text-zinc-400">
-                      Guaranteed 1-Hour Shield • 1 WLD
+                      Flies for 1 Hour • 1 WLD
                     </div>
                   </div>
                 </div>
@@ -2172,7 +2172,7 @@ export const KissCoinGame: React.FC = () => {
               <form onSubmit={handlePayWldOverride} className="flex flex-col gap-2 mb-1">
                 <div>
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-extrabold text-zinc-400 uppercase">Your VIP Message</label>
+                    <label className="text-[10px] font-extrabold text-zinc-400 uppercase">Your Message</label>
                     <span className="text-[9px] font-bold text-zinc-500">{sponsorMessage.length}/65</span>
                   </div>
                   <input
@@ -2180,7 +2180,7 @@ export const KissCoinGame: React.FC = () => {
                     maxLength={65}
                     value={sponsorMessage}
                     onChange={(e) => setSponsorMessage(e.target.value)}
-                    placeholder="Your VIP message (e.g. Kiss the sky! 💋)"
+                    placeholder="Your message on the balloon (e.g. Kiss the sky! 💋)"
                     className="w-full mt-0.5 px-3 py-2 text-xs rounded-xl border border-zinc-700 bg-zinc-900 font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-inner"
                   />
                 </div>
@@ -2189,12 +2189,12 @@ export const KissCoinGame: React.FC = () => {
                   <span className="flex items-center gap-1.5 font-bold text-amber-400">
                     <span className="text-base">🪙</span> Cost: 1.0 WLD
                   </span>
-                  <span className="text-[10px] text-amber-400 font-bold bg-amber-950/80 border border-amber-600/50 px-1.5 py-0.5 rounded-md">60 Min Shield</span>
+                  <span className="text-[10px] text-amber-400 font-bold bg-amber-950/80 border border-amber-600/50 px-1.5 py-0.5 rounded-md">Flies for 1 Hour</span>
                 </div>
 
                 {wldPayState === 'success' && (
                   <div className="bg-emerald-950/80 border border-emerald-500 text-emerald-300 text-xs font-bold py-2 px-3 rounded-xl text-center">
-                    ✓ 1 WLD Approved! 1-Hour VIP Shield Active 💎
+                    ✓ 1 WLD Approved! Your message is now flying for 1 hour 🎈
                   </div>
                 )}
 
@@ -2209,7 +2209,7 @@ export const KissCoinGame: React.FC = () => {
                   disabled={wldPayState === 'pending'}
                   className="w-full py-2.5 bg-gradient-to-r from-amber-500 via-rose-500 to-pink-600 hover:from-amber-600 hover:to-rose-600 text-white font-black text-xs rounded-xl shadow-md transition-transform active:scale-95 disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  {wldPayState === 'pending' ? 'Processing 1 WLD...' : 'Pay 1 WLD (Fly for 1 Hour 💎)'}
+                  {wldPayState === 'pending' ? 'Processing 1 WLD...' : 'Pay 1 WLD & Fly Message for 1 Hour 🎈'}
                 </button>
               </form>
             </div>

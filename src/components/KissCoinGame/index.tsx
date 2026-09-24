@@ -445,7 +445,7 @@ export const KissCoinGame: React.FC = () => {
       if (MiniKit.isInstalled()) {
         const recipient =
           process.env.NEXT_PUBLIC_WLD_RECIPIENT_ADDRESS ||
-          '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
+          '0xc44cf13e1525314c0f5182adabd4830a367598ac';
 
         const payRes = await MiniKit.pay({
           reference: refId,
